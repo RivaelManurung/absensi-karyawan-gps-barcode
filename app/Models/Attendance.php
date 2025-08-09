@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Attendance extends Model
 {
     use HasFactory;
+    protected $table = 'attendances'; // tambahkan ini
+
     protected $guarded = ['id'];
 
     /**

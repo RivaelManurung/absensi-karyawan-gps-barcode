@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Barcode extends Model
 {
     use HasFactory;
+    protected $table = 'barcodes'; // tambahkan ini
+
     protected $guarded = ['id'];
 
     /**

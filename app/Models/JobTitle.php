@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class JobTitle extends Model
 {
     use HasFactory;
+    protected $table = 'job_titles'; // tambahkan ini
+
     protected $guarded = ['id'];
 
     /**

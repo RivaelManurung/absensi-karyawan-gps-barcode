@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-         Schema::create('users', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->string('nip')->nullable();
             $table->string('name');
@@ -29,6 +29,7 @@ return new class extends Migration
             $table->foreignId('division_id')->nullable()->constrained('divisions');
             // jabatan
             $table->foreignId('job_title_id')->nullable()->constrained('job_titles');
+            $table->foreignId('shift_id')->nullable()->constrained('shifts');
 
             $table->string('password');
             $table->string('raw_password')->nullable();
@@ -49,7 +50,7 @@ return new class extends Migration
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
+            $table->foreignUlid('user_id')->nullable()->index(); // <-- BENAR
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');

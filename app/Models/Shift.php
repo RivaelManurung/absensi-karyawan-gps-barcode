@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Shift extends Model
 {
     use HasFactory;
+    protected $table = 'shifts'; // tambahkan ini
+
     protected $guarded = ['id'];
 
     /**

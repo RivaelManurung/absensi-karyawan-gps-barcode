@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Division extends Model
 {
     use HasFactory;
+    protected $table = 'divisions'; // tambahkan ini
+
     protected $guarded = ['id'];
 
     /**
