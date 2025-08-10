@@ -3,12 +3,12 @@
         @php
         $homeRoute = 'login'; // Default
         if (Auth::check()) {
-            $group = Auth::user()->group; // Menggunakan 'group' sesuai pembahasan sebelumnya
-            if ($group === 'admin' || $group === 'superadmin') {
-                $homeRoute = 'admin.dashboard'; // Asumsi route dashboard admin
-            } elseif ($group === 'user') {
-                $homeRoute = 'attendances.index'; // Halaman utama absensi karyawan
-            }
+        $group = Auth::user()->group; // Menggunakan 'group' sesuai pembahasan sebelumnya
+        if ($group === 'admin' || $group === 'superadmin') {
+        $homeRoute = 'admin.dashboard'; // Asumsi route dashboard admin
+        } elseif ($group === 'user') {
+        $homeRoute = 'attendances.index'; // Halaman utama absensi karyawan
+        }
         }
         @endphp
         <a href="{{ route($homeRoute) }}" class="app-brand-link">
@@ -59,12 +59,12 @@
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Data Master</span>
         </li>
-        {{-- <li class="menu-item {{ Request::routeIs('users*') ? 'active' : '' }}">
-            <a href="{{ route('users.index') }}" class="menu-link">
+        <li class="menu-item {{ Request::routeIs('users*') ? 'active' : '' }}">
+            <a href="{{ route('admin.users.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-group"></i>
                 <div class="text-truncate">Data Karyawan</div>
             </a>
-        </li> --}}
+        </li>
         <li class="menu-item {{ Request::routeIs('divisions*') ? 'active' : '' }}">
             <a href="{{ route('admin.divisions.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-building"></i>
@@ -77,7 +77,7 @@
                 <div class="text-truncate">Data Jabatan</div>
             </a>
         </li>
-         <li class="menu-item {{ Request::routeIs('shifts*') ? 'active' : '' }}">
+        <li class="menu-item {{ Request::routeIs('shifts*') ? 'active' : '' }}">
             <a href="{{ route('admin.shifts.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-time"></i>
                 <div class="text-truncate">Data Shift</div>

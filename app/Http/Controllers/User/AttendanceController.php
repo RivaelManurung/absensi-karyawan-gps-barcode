@@ -1,34 +1,36 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Attendance;
 use App\Models\Barcode;
 use Carbon\Carbon;
+use App\Http\Controllers\Traits\CalculatesDistance;
+use App\Http\Controllers\Controller;
 
 class AttendanceController extends Controller
 {
+    use CalculatesDistance;
+
     /**
-     * Menampilkan halaman utama absensi untuk karyawan.
-     * Halaman ini akan menampilkan form clock-in/clock-out sesuai kondisi.
+     * Menampilkan halaman utama absensi dengan semua data untuk tab.
      */
     public function index()
     {
         $user = Auth::user();
 
-        // Data untuk status absensi hari ini
         $todayAttendance = Attendance::where('user_id', $user->id)
             ->whereDate('date', Carbon::today())
             ->first();
 
-        // Data untuk tabel riwayat (kita ambil 5 terakhir)
         $history = Attendance::where('user_id', $user->id)
+            ->with('shift')
             ->orderBy('date', 'desc')
-            ->paginate(5); // Ubah angka 5 jika ingin menampilkan lebih banyak
+            ->paginate(10); // Menampilkan 10 riwayat per halaman
 
-        return view('user.attendances.index', [
+        return view('user.attendances.index', [ // Pastikan path view ini benar
             'todayAttendance' => $todayAttendance,
             'history'         => $history
         ]);
@@ -41,42 +43,43 @@ class AttendanceController extends Controller
     {
         $request->validate([
             'barcode_value' => 'required|string',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
         ]);
 
         $user = Auth::user();
 
-        // 1. Cek apakah sudah ada absensi untuk hari ini
         if (Attendance::where('user_id', $user->id)->whereDate('date', Carbon::today())->exists()) {
             return back()->with('error', 'Anda sudah tercatat absensi untuk hari ini.');
         }
 
-        // 2. Validasi Barcode
         $barcode = Barcode::where('value', $request->barcode_value)->first();
         if (!$barcode) {
             return back()->with('error', 'Lokasi absensi (barcode) tidak valid.');
         }
 
-        // 3. Validasi Jarak (Geolocation)
-        $distance = $this->calculateDistance($request->latitude, $request->longitude, $barcode->latitude, $barcode->longitude);
-        if ($distance > $barcode->radius) {
-            return back()->with('error', 'Anda berada di luar jangkauan lokasi yang diizinkan (' . round($distance) . ' meter).');
+        try {
+            $distance = $this->calculateOptimalDistance(
+                $request->latitude,
+                $request->longitude,
+                $barcode->latitude,
+                $barcode->longitude
+            );
+        } catch (\InvalidArgumentException $e) {
+            return back()->with('error', $e->getMessage());
         }
 
-        // 4. Tentukan Shift dan Status
-        // Pastikan Anda sudah mengatur relasi 'shift' pada model User
-        // Contoh: $user->shift_id diisi saat admin membuat data karyawan
+        if ($distance > $barcode->radius) {
+            return back()->with('error', 'Anda berada di luar jangkauan lokasi (' . round($distance) . ' meter).');
+        }
+
         $shift = $user->shift;
         if (!$shift) {
-            // Jika user tidak punya shift, gunakan shift default atau beri error
-            // Untuk contoh ini, kita anggap user wajib punya shift
             return back()->with('error', 'Jadwal shift Anda tidak ditemukan. Hubungi admin.');
         }
 
         $status = (Carbon::now()->format('H:i:s') > $shift->start_time) ? 'late' : 'present';
 
-        // 5. Membuat record absensi
         Attendance::create([
             'user_id' => $user->id,
             'barcode_id' => $barcode->id,
@@ -88,7 +91,7 @@ class AttendanceController extends Controller
             'longitude' => $request->longitude,
         ]);
 
-        return redirect()->route('user.attendances.index')->with('success', 'Absensi masuk berhasil direkam!');
+        return redirect()->route('attendances.index')->with('success', 'Absensi masuk berhasil direkam! Jarak: ' . round($distance) . ' meter');
     }
 
     /**
@@ -96,9 +99,13 @@ class AttendanceController extends Controller
      */
     public function storeClockOut(Request $request)
     {
+        $request->validate([
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
+        ]);
+
         $user = Auth::user();
 
-        // Cari data absensi hari ini yang sudah clock-in tapi belum clock-out
         $attendance = Attendance::where('user_id', $user->id)
             ->whereDate('date', Carbon::today())
             ->whereNotNull('time_in')
@@ -109,32 +116,28 @@ class AttendanceController extends Controller
             return back()->with('error', 'Tidak ada data absensi masuk untuk di-update.');
         }
 
-        $attendance->update([
-            'time_out' => Carbon::now(),
-        ]);
+        // Validasi ulang lokasi saat clock-out
+        $barcode = $attendance->barcode;
+        if ($barcode) {
+            try {
+                $distance = $this->calculateOptimalDistance(
+                    $request->latitude,
+                    $request->longitude,
+                    $barcode->latitude,
+                    $barcode->longitude
+                );
+
+                if ($distance > $barcode->radius) {
+                    return back()->with('error', 'Anda berada di luar jangkauan untuk clock-out (' . round($distance) . ' meter).');
+                }
+            } catch (\InvalidArgumentException $e) {
+                return back()->with('error', 'Koordinat tidak valid saat clock-out.');
+            }
+        }
+
+        $attendance->update(['time_out' => Carbon::now()]);
 
         return redirect()->route('attendances.index')->with('success', 'Absensi pulang berhasil direkam!');
-    }
-
-    /**
-     * Menampilkan halaman riwayat absensi milik karyawan yang login.
-     */
-    public function history()
-    {
-        $history = Attendance::where('user_id', Auth::id())
-            ->with('shift') // Eager load untuk performa
-            ->orderBy('date', 'desc')
-            ->paginate(15); // Paginasi untuk data yang banyak
-
-        return view('user.attendances.history', ['history' => $history]);
-    }
-
-    /**
-     * Menampilkan form untuk mengajukan izin.
-     */
-    public function createRequest()
-    {
-        return view('user.attendances.request_create');
     }
 
     /**
@@ -156,7 +159,6 @@ class AttendanceController extends Controller
 
         $attachmentPath = null;
         if ($request->hasFile('attachment')) {
-            // Simpan file ke storage/app/public/attachments
             $attachmentPath = $request->file('attachment')->store('attachments', 'public');
         }
 
@@ -167,23 +169,8 @@ class AttendanceController extends Controller
             'note' => $request->note,
             'attachment' => $attachmentPath,
         ]);
-
-        return redirect()->route('attendances.index')->with('success', 'Pengajuan izin Anda telah berhasil dikirim.');
-    }
-
-    /**
-     * Fungsi private untuk menghitung jarak.
-     */
-    private function calculateDistance($lat1, $lon1, $lat2, $lon2): float
-    {
-        $earthRadius = 6371000; // dalam meter
-        $latFrom = deg2rad($lat1);
-        $lonFrom = deg2rad($lon1);
-        $latTo = deg2rad($lat2);
-        $lonTo = deg2rad($lon2);
-        $latDelta = $latTo - $latFrom;
-        $lonDelta = $lonTo - $lonFrom;
-        $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) + cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
-        return $angle * $earthRadius;
+        return redirect()->route('attendances.index')
+            ->with('success', 'Pengajuan izin Anda telah berhasil dikirim.')
+            ->with('active_tab', 'request');
     }
 }

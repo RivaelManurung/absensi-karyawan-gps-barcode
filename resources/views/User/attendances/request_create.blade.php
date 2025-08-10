@@ -1,4 +1,4 @@
-@extends('user.layout.app') {{-- Ganti dengan layout utama Anda --}}
+@extends('layouts.app')
 
 @section('title', 'Pengajuan Izin/Sakit')
 

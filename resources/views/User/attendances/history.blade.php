@@ -1,9 +1,15 @@
-@extends('user.layout.app')
+@extends('layouts.app')
+
 @section('title', 'Riwayat Absensi')
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4">Riwayat Absensi Saya</h4>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Riwayat Absensi Saya</h4>
+        <a href="{{ route('attendances.index') }}" class="btn btn-secondary">
+            <i class="bx bx-arrow-back me-1"></i> Kembali ke Absensi
+        </a>
+    </div>
 
     <div class="card">
         <div class="card-header">

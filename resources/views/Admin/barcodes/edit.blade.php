@@ -9,8 +9,6 @@
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
-                    {{-- Input-input di bawah ini sekarang menggunakan old() --}}
-                    {{-- Ini akan otomatis terisi jika ada error validasi --}}
                     <div class="mb-3">
                         <label for="edit_name" class="form-label">Nama Lokasi</label>
                         <input type="text" class="form-control" id="edit_name" name="name" value="{{ old('name') }}" required />

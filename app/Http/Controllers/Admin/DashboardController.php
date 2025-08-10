@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -10,6 +10,7 @@ use App\Models\Shift;
 use App\Models\Attendance;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Http\Controllers\Controller;
 
 class DashboardController extends Controller
 {

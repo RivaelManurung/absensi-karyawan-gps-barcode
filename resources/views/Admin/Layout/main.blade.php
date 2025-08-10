@@ -1,12 +1,11 @@
 <!doctype html>
-<html lang="en" class="layout-menu-fixed layout-compact" data-assets-path="{{ asset('assets/') }}"
+<html lang="id" class="layout-menu-fixed layout-compact" data-assets-path="{{ asset('assets/') }}"
     data-template="vertical-menu-template-free">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-
     <title>@yield('title') | Absensi</title>
 
     <meta name="description" content="Aplikasi manajemen keuangan pribadi" />
@@ -18,19 +17,17 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
         rel="stylesheet" />
-
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-
 
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/core.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-
 
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/apex-charts/apex-charts.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/iconify-icons.css') }}" />
 
-    @yield('styles')
+
+    @stack('styles')
 
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('assets/js/config.js') }}"></script>
@@ -60,9 +57,10 @@
                             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);"
                                     data-bs-toggle="dropdown">
+                                    {{-- PERBAIKAN: Avatar gambar diganti dengan ikon --}}
                                     <div class="avatar avatar-online">
-                                        <img src="{{ asset('assets/img/avatars/1.png') }}" alt
-                                            class="w-px-40 h-auto rounded-circle" />
+                                        <span class="avatar-initial rounded-circle bg-primary"><i
+                                                class="bx bx-user"></i></span>
                                     </div>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
@@ -71,13 +69,15 @@
                                             <div class="d-flex">
                                                 <div class="flex-shrink-0 me-3">
                                                     <div class="avatar avatar-online">
-                                                        <img src="{{ asset('assets/img/avatars/1.png') }}" alt
-                                                            class="w-px-40 h-auto rounded-circle" />
+                                                        {{-- PERBAIKAN: Avatar gambar diganti dengan ikon --}}
+                                                        <span class="avatar-initial rounded-circle bg-primary"><i
+                                                                class="bx bx-user"></i></span>
                                                     </div>
                                                 </div>
                                                 <div class="flex-grow-1">
-                                                    <span class="fw-medium d-block">{{ Auth::user()->name }}</span>
-                                                    <small class="text-muted">{{ Auth::user()->email }}</small>
+                                                    {{-- Menampilkan nama lengkap user yang login --}}
+                                                    <span class="fw-medium d-block">{{ Auth::user()->fullname }}</span>
+                                                    <small class="text-muted">{{ ucfirst(Auth::user()->peran) }}</small>
                                                 </div>
                                             </div>
                                         </a>
@@ -85,16 +85,9 @@
                                     <li>
                                         <div class="dropdown-divider"></div>
                                     </li>
+                                    {{-- PERBAIKAN: Menu "My Profile" dihapus --}}
                                     <li>
-                                        <a class="dropdown-item" href="#">
-                                            <i class="bx bx-user me-2"></i>
-                                            <span class="align-middle">My Profile</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <div class="dropdown-divider"></div>
-                                    </li>
-                                    <li>
+                                        {{-- Form Logout yang aman --}}
                                         <form action="{{ route('logout') }}" method="POST" id="logout-form">
                                             @csrf
                                             <a class="dropdown-item" href="#"
@@ -110,9 +103,8 @@
                     </div>
                 </nav>
                 <div class="content-wrapper">
-                    <div class="container-xxl flex-grow-1 container-p-y">
-                        @yield('content')
-                    </div>
+                    @yield('content')
+
                     @include('admin.layout.footer')
                     <div class="content-backdrop fade"></div>
                 </div>
@@ -129,8 +121,7 @@
     <script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
 
-    {{-- ✅ PERBAIKAN FINAL: Mengubah @stack menjadi @yield agar cocok dengan @section --}}
-    @yield('scripts')
+    @stack('scripts')
 
 </body>
 
