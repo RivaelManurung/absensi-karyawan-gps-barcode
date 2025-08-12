@@ -52,6 +52,41 @@ class UserController extends Controller
     }
 
     /**
+     * Menampilkan form untuk membuat user baru.
+     */
+    public function create()
+    {
+        $divisions = Division::all();
+        $jobTitles = JobTitle::all();
+        $shifts = Shift::all();
+        $educations = Education::all();
+        
+        return view('admin.users.create-page', compact('divisions', 'jobTitles', 'shifts', 'educations'));
+    }
+
+    /**
+     * Menampilkan detail user.
+     */
+    public function show(User $user)
+    {
+        $user->load(['division', 'jobTitle', 'education', 'shift']);
+        return view('admin.users.show', compact('user'));
+    }
+
+    /**
+     * Menampilkan form untuk edit user.
+     */
+    public function edit(User $user)
+    {
+        $divisions = Division::orderBy('name')->get();
+        $jobTitles = JobTitle::orderBy('name')->get();
+        $educations = Education::all();
+        $shifts = Shift::orderBy('name')->get();
+
+        return view('admin.users.edit', compact('user', 'divisions', 'jobTitles', 'educations', 'shifts'));
+    }
+
+    /**
      * Menyimpan pengguna baru dari modal.
      */
     public function store(Request $request)

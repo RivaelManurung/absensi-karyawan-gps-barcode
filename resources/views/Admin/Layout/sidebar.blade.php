@@ -8,7 +8,7 @@
             <span class="app-brand-logo demo">
                 <img src="{{ asset('assets/Logo.png') }}" alt="Logo" width="30" />
             </span>
-            <span class="app-brand-text demo menu-text fw-bold ms-2">Absensi</span>
+            <span class="app-brand-text demo menu-text fw-bold ms-2">Absensi Karyawan</span>
         </a>
 
         <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-xl-none">
@@ -35,9 +35,9 @@
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Manajemen Utama</span>
         </li>
-        <li class="menu-item">
-            <a href="#" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-check-square"></i>
+        <li class="menu-item {{ Request::routeIs('admin.reports*') ? 'active' : '' }}">
+            <a href="{{ route('admin.reports.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-chart"></i>
                 <div class="text-truncate">Laporan Absensi</div>
             </a>
         </li>

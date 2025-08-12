@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\JobTitleController;
 use App\Http\Controllers\Admin\ShiftController;
 use App\Http\Controllers\Admin\StatusController;
 use App\Http\Controllers\Admin\BarcodeController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\User\AttendanceController;
 
 // Route untuk tamu (belum login)
@@ -31,6 +32,16 @@ Route::middleware('auth')->group(function () {
         Route::post('/absensi/clock-in', [AttendanceController::class, 'storeClockIn'])->name('attendances.clockin');
         Route::post('/absensi/clock-out', [AttendanceController::class, 'storeClockOut'])->name('attendances.clockout');
         Route::post('/absensi/request', [AttendanceController::class, 'storeRequest'])->name('attendances.request.store');
+        
+        // Profile Management Routes
+        Route::prefix('profile')->name('user.profile.')->group(function () {
+            Route::get('/', [App\Http\Controllers\User\ProfileController::class, 'index'])->name('index');
+            Route::get('/edit', [App\Http\Controllers\User\ProfileController::class, 'edit'])->name('edit');
+            Route::put('/update', [App\Http\Controllers\User\ProfileController::class, 'update'])->name('update');
+            Route::get('/change-password', [App\Http\Controllers\User\ProfileController::class, 'changePassword'])->name('change-password');
+            Route::put('/update-password', [App\Http\Controllers\User\ProfileController::class, 'updatePassword'])->name('update-password');
+            Route::delete('/delete-photo', [App\Http\Controllers\User\ProfileController::class, 'deleteProfilePhoto'])->name('delete-photo');
+        });
     });
 
     // --- AREA KHUSUS ADMIN ---
@@ -38,12 +49,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         // ✅ PERBAIKAN UTAMA ADA DI SINI
+        // Route khusus harus didefinisikan sebelum resource route
+        Route::get('/users/per-division', [UserController::class, 'perDivision'])->name('users.per-division');
+        
+        // API endpoint untuk memuat user berdasarkan divisi
+        Route::get('/divisions/{division}/users', [DivisionController::class, 'getUsers'])->name('divisions.users');
+        
         // Kita batasi resource controller agar hanya membuat route yang kita butuhkan
         Route::resource('users', UserController::class)->only([
-            'index', 'store', 'update', 'destroy'
+            'index', 'create', 'store', 'show', 'edit', 'update', 'destroy'
         ]);
-        
-        Route::get('/users/per-division', [UserController::class, 'perDivision'])->name('users.per-division');
 
         Route::resource('divisions', DivisionController::class);
         Route::resource('job-titles', JobTitleController::class);
@@ -59,6 +74,13 @@ Route::middleware('auth')->group(function () {
             Route::get('/{id}', [App\Http\Controllers\Admin\LeaveRequestController::class, 'show'])->name('show');
             Route::patch('/{id}/approve', [App\Http\Controllers\Admin\LeaveRequestController::class, 'approve'])->name('approve');
             Route::patch('/{id}/reject', [App\Http\Controllers\Admin\LeaveRequestController::class, 'reject'])->name('reject');
+            Route::get('/{id}/download-attachment', [App\Http\Controllers\Admin\LeaveRequestController::class, 'downloadAttachment'])->name('download-attachment');
+            Route::get('/{id}/view-attachment', [App\Http\Controllers\Admin\LeaveRequestController::class, 'viewAttachment'])->name('view-attachment');
         });
+
+        // Reports routes - Unified
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
+        Route::get('/divisions/{division}/users', [ReportController::class, 'getUsersByDivision'])->name('divisions.users');
     });
 });

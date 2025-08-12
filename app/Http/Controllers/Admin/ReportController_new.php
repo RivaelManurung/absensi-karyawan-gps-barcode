@@ -6,12 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Division;
 use App\Models\User;
-use App\Exports\AttendanceReportExport;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Facades\Excel;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportController extends Controller
 {
@@ -27,26 +24,19 @@ class ReportController extends Controller
         
         // Get filter data
         $divisions = Division::all();
-        $users = User::where('group', 'user')->orderBy('name')->get();
+        $users = User::where('role', 'user')->orderBy('name')->get();
         
         // Calculate statistics
-        $totalEmployees = User::where('group', 'user')->count();
+        $totalEmployees = User::where('role', 'user')->count();
         
         $today = Carbon::now()->format('Y-m-d');
-        
-        // Get present today (status dengan nama 'present')
         $presentToday = Attendance::whereDate('date', $today)
-            ->whereHas('status', function($q) {
-                $q->where('name', 'present');
-            })
+            ->where('status', 'present')
             ->distinct('user_id')
             ->count();
             
-        // Get on leave today (status dengan nama 'sick', 'leave', 'excused')
         $onLeaveToday = Attendance::whereDate('date', $today)
-            ->whereHas('status', function($q) {
-                $q->whereIn('name', ['sick', 'leave', 'excused']);
-            })
+            ->whereIn('status', ['sick', 'leave', 'excused'])
             ->distinct('user_id')
             ->count();
         
@@ -54,7 +44,7 @@ class ReportController extends Controller
             'total_employees' => $totalEmployees,
             'present_today' => $presentToday,
             'on_leave_today' => $onLeaveToday,
-            'absent_today' => max(0, $totalEmployees - $presentToday - $onLeaveToday)
+            'absent_today' => $totalEmployees - $presentToday - $onLeaveToday
         ];
         
         // Determine date range based on report type
@@ -70,7 +60,7 @@ class ReportController extends Controller
         }
         
         // Build base query
-        $baseQuery = Attendance::with(['user.division', 'user.jobTitle', 'status'])
+        $baseQuery = Attendance::with(['user.division', 'user.jobTitle'])
             ->whereBetween('date', [$startDate, $endDate]);
             
         if ($divisionId) {
@@ -102,36 +92,34 @@ class ReportController extends Controller
                 
             case 'daily':
                 // Group by date for daily reports
-                $daily_data = $baseQuery->join('statuses', 'attendances.status_id', '=', 'statuses.id')
-                    ->selectRaw('
-                        date,
-                        COUNT(DISTINCT user_id) as total_employees,
-                        COUNT(CASE WHEN statuses.name = "present" THEN 1 END) as present,
-                        COUNT(CASE WHEN statuses.name = "late" THEN 1 END) as late,
-                        COUNT(CASE WHEN statuses.name = "absent" THEN 1 END) as absent,
-                        COUNT(CASE WHEN statuses.name IN ("sick", "leave", "excused") THEN 1 END) as on_leave
-                    ')
-                    ->groupBy('date')
-                    ->orderBy('date', 'desc')
-                    ->get();
+                $daily_data = $baseQuery->selectRaw('
+                    date,
+                    COUNT(DISTINCT user_id) as total_employees,
+                    COUNT(CASE WHEN status = "present" THEN 1 END) as present,
+                    COUNT(CASE WHEN status = "late" THEN 1 END) as late,
+                    COUNT(CASE WHEN status = "absent" THEN 1 END) as absent,
+                    COUNT(CASE WHEN status IN ("sick", "leave", "excused") THEN 1 END) as on_leave
+                ')
+                ->groupBy('date')
+                ->orderBy('date', 'desc')
+                ->get();
                 
                 $daily_reports = $daily_data->toArray();
                 break;
                 
             case 'monthly':
                 // Group by month for monthly reports
-                $monthly_data = $baseQuery->join('statuses', 'attendances.status_id', '=', 'statuses.id')
-                    ->selectRaw('
-                        DATE_FORMAT(date, "%Y-%m") as month,
-                        COUNT(DISTINCT DATE(date)) as working_days,
-                        COUNT(CASE WHEN statuses.name = "present" THEN 1 END) as present,
-                        COUNT(CASE WHEN statuses.name = "late" THEN 1 END) as late,
-                        COUNT(CASE WHEN statuses.name = "absent" THEN 1 END) as absent,
-                        COUNT(CASE WHEN statuses.name IN ("sick", "leave", "excused") THEN 1 END) as on_leave
-                    ')
-                    ->groupBy(DB::raw('DATE_FORMAT(date, "%Y-%m")'))
-                    ->orderBy('month', 'desc')
-                    ->get();
+                $monthly_data = $baseQuery->selectRaw('
+                    DATE_FORMAT(date, "%Y-%m") as month,
+                    COUNT(DISTINCT DATE(date)) as working_days,
+                    COUNT(CASE WHEN status = "present" THEN 1 END) as present,
+                    COUNT(CASE WHEN status = "late" THEN 1 END) as late,
+                    COUNT(CASE WHEN status = "absent" THEN 1 END) as absent,
+                    COUNT(CASE WHEN status IN ("sick", "leave", "excused") THEN 1 END) as on_leave
+                ')
+                ->groupBy(DB::raw('DATE_FORMAT(date, "%Y-%m")'))
+                ->orderBy('month', 'desc')
+                ->get();
                 
                 $monthly_reports = $monthly_data->toArray();
                 break;
@@ -145,12 +133,11 @@ class ReportController extends Controller
                             ->paginate(20);
                             
                         $user_stats = $baseQuery->where('user_id', $userId)
-                            ->join('statuses', 'attendances.status_id', '=', 'statuses.id')
                             ->selectRaw('
-                                COUNT(CASE WHEN statuses.name = "present" THEN 1 END) as present,
-                                COUNT(CASE WHEN statuses.name = "late" THEN 1 END) as late,
-                                COUNT(CASE WHEN statuses.name = "absent" THEN 1 END) as absent,
-                                COUNT(CASE WHEN statuses.name IN ("sick", "leave", "excused") THEN 1 END) as on_leave
+                                COUNT(CASE WHEN status = "present" THEN 1 END) as present,
+                                COUNT(CASE WHEN status = "late" THEN 1 END) as late,
+                                COUNT(CASE WHEN status = "absent" THEN 1 END) as absent,
+                                COUNT(CASE WHEN status IN ("sick", "leave", "excused") THEN 1 END) as on_leave
                             ')
                             ->first();
                             
@@ -172,53 +159,36 @@ class ReportController extends Controller
                 $divisions_with_data = Division::with('users')->get();
                 
                 foreach ($divisions_with_data as $division) {
-                    $division_attendances = Attendance::with('status')
-                        ->whereHas('user', function($q) use ($division) {
-                            $q->where('division_id', $division->id);
-                        })
-                        ->whereBetween('date', [$startDate, $endDate])
-                        ->get();
+                    $division_attendances = Attendance::whereHas('user', function($q) use ($division) {
+                        $q->where('division_id', $division->id);
+                    })
+                    ->whereBetween('date', [$startDate, $endDate])
+                    ->get();
                     
                     $division_stats = [
-                        'present' => $division_attendances->filter(function($att) {
-                            return $att->status && $att->status->name == 'present';
-                        })->count(),
-                        'late' => $division_attendances->filter(function($att) {
-                            return $att->status && $att->status->name == 'late';
-                        })->count(),
-                        'absent' => $division_attendances->filter(function($att) {
-                            return $att->status && $att->status->name == 'absent';
-                        })->count(),
-                        'on_leave' => $division_attendances->filter(function($att) {
-                            return $att->status && in_array($att->status->name, ['sick', 'leave', 'excused']);
-                        })->count()
+                        'present' => $division_attendances->where('status', 'present')->count(),
+                        'late' => $division_attendances->where('status', 'late')->count(),
+                        'absent' => $division_attendances->where('status', 'absent')->count(),
+                        'on_leave' => $division_attendances->whereIn('status', ['sick', 'leave', 'excused'])->count()
                     ];
                     
                     $employees = [];
-                    foreach ($division->users->where('group', 'user') as $user) {
+                    foreach ($division->users->where('role', 'user') as $user) {
                         $user_attendances = $division_attendances->where('user_id', $user->id);
                         $employees[] = [
                             'user' => $user,
                             'statistics' => [
-                                'present' => $user_attendances->filter(function($att) {
-                                    return $att->status && $att->status->name == 'present';
-                                })->count(),
-                                'late' => $user_attendances->filter(function($att) {
-                                    return $att->status && $att->status->name == 'late';
-                                })->count(),
-                                'absent' => $user_attendances->filter(function($att) {
-                                    return $att->status && $att->status->name == 'absent';
-                                })->count(),
-                                'on_leave' => $user_attendances->filter(function($att) {
-                                    return $att->status && in_array($att->status->name, ['sick', 'leave', 'excused']);
-                                })->count()
+                                'present' => $user_attendances->where('status', 'present')->count(),
+                                'late' => $user_attendances->where('status', 'late')->count(),
+                                'absent' => $user_attendances->where('status', 'absent')->count(),
+                                'on_leave' => $user_attendances->whereIn('status', ['sick', 'leave', 'excused'])->count()
                             ]
                         ];
                     }
                     
                     $division_reports[] = [
                         'division' => $division,
-                        'total_employees' => $division->users->where('group', 'user')->count(),
+                        'total_employees' => $division->users->where('role', 'user')->count(),
                         'statistics' => $division_stats,
                         'employees' => $employees
                     ];
@@ -226,10 +196,8 @@ class ReportController extends Controller
                 break;
                 
             case 'leave-requests':
-                $leave_requests = Attendance::with(['user.division', 'user.jobTitle', 'status'])
-                    ->whereHas('status', function($q) {
-                        $q->whereIn('name', ['sick', 'leave', 'excused']);
-                    })
+                $leave_requests = Attendance::with(['user.division', 'user.jobTitle'])
+                    ->whereIn('status', ['sick', 'leave', 'excused'])
                     ->whereBetween('date', [$startDate, $endDate]);
                     
                 if ($divisionId) {
@@ -304,13 +272,11 @@ class ReportController extends Controller
         
         // Build query based on report type
         if ($reportType === 'leave-requests') {
-            $query = Attendance::with(['user.division', 'user.jobTitle', 'status'])
-                ->whereHas('status', function($q) {
-                    $q->whereIn('name', ['sick', 'leave', 'excused']);
-                })
+            $query = Attendance::with(['user.division', 'user.jobTitle'])
+                ->whereIn('status', ['sick', 'leave', 'excused'])
                 ->whereBetween('date', [$startDate, $endDate]);
         } else {
-            $query = Attendance::with(['user.division', 'user.jobTitle', 'status'])
+            $query = Attendance::with(['user.division', 'user.jobTitle'])
                 ->whereBetween('date', [$startDate, $endDate]);
         }
             
@@ -328,38 +294,6 @@ class ReportController extends Controller
             ->orderBy('user_id', 'asc')
             ->get();
         
-        // Handle Excel export
-        if ($format == 'excel') {
-            return Excel::download(
-                new AttendanceReportExport($attendances, $reportType), 
-                $filename . '.xlsx'
-            );
-        }
-        
-        // Handle PDF export
-        if ($format == 'pdf') {
-            // Get statistics
-            $statistics = $this->getStatistics();
-            
-            // Prepare data for PDF
-            $data = [
-                'attendances' => $attendances,
-                'reportType' => $reportType,
-                'reportTypeLabel' => $this->getReportTypeLabel($reportType),
-                'title' => 'Laporan Absensi Karyawan',
-                'period' => Carbon::parse($startDate)->format('d/m/Y') . ' - ' . Carbon::parse($endDate)->format('d/m/Y'),
-                'selectedDivision' => $divisionId ? Division::find($divisionId)->name : null,
-                'selectedEmployee' => $userId ? User::find($userId)->name : null,
-                'statistics' => $statistics
-            ];
-
-            $pdf = Pdf::loadView('Admin.reports.pdf.attendance-report', $data);
-            $pdf->setPaper('A4', 'landscape');
-            
-            return $pdf->download($filename . '.pdf');
-        }
-        
-        // Handle CSV export (existing code)
         if ($format == 'csv') {
             $headers = [
                 'Content-Type' => 'text/csv',
@@ -402,8 +336,8 @@ class ReportController extends Controller
                             $attendance->user->name ?? '',
                             $attendance->user->division->name ?? '',
                             $attendance->user->jobTitle->name ?? '',
-                            $attendance->status->name ?? '',
-                            $attendance->note ?? ''
+                            ucfirst($attendance->status),
+                            $attendance->notes ?? ''
                         ]);
                     } else {
                         fputcsv($file, [
@@ -411,10 +345,10 @@ class ReportController extends Controller
                             $attendance->user->name ?? '',
                             $attendance->user->division->name ?? '',
                             $attendance->user->jobTitle->name ?? '',
-                            $attendance->status->name ?? '',
-                            $attendance->time_in ? Carbon::parse($attendance->time_in)->format('H:i') : '',
-                            $attendance->time_out ? Carbon::parse($attendance->time_out)->format('H:i') : '',
-                            $attendance->note ?? ''
+                            ucfirst($attendance->status),
+                            $attendance->check_in ? Carbon::parse($attendance->check_in)->format('H:i') : '',
+                            $attendance->check_out ? Carbon::parse($attendance->check_out)->format('H:i') : '',
+                            $attendance->notes ?? ''
                         ]);
                     }
                 }
@@ -425,57 +359,14 @@ class ReportController extends Controller
             return response()->stream($callback, 200, $headers);
         }
         
-        return redirect()->back()->with('error', 'Format tidak valid');
-    }
-
-    private function getStatistics()
-    {
-        $totalEmployees = User::where('group', 'user')->count();
-        
-        $today = Carbon::now()->format('Y-m-d');
-        
-        // Get present today
-        $presentToday = Attendance::whereDate('date', $today)
-            ->whereHas('status', function($q) {
-                $q->where('name', 'present');
-            })
-            ->distinct('user_id')
-            ->count();
-            
-        // Get on leave today
-        $onLeaveToday = Attendance::whereDate('date', $today)
-            ->whereHas('status', function($q) {
-                $q->whereIn('name', ['sick', 'leave', 'excused']);
-            })
-            ->distinct('user_id')
-            ->count();
-        
-        return [
-            'total_employees' => $totalEmployees,
-            'present_today' => $presentToday,
-            'on_leave_today' => $onLeaveToday,
-            'absent_today' => max(0, $totalEmployees - $presentToday - $onLeaveToday)
-        ];
-    }
-
-    private function getReportTypeLabel($reportType)
-    {
-        $labels = [
-            'overview' => 'Ringkasan Keseluruhan',
-            'daily' => 'Laporan Harian',
-            'monthly' => 'Laporan Bulanan',
-            'employee' => 'Laporan Per Karyawan',
-            'division' => 'Laporan Per Divisi',
-            'leave-requests' => 'Laporan Izin'
-        ];
-
-        return $labels[$reportType] ?? 'Laporan Absensi';
+        // For Excel format (placeholder)
+        return redirect()->back()->with('error', 'Format Excel belum tersedia');
     }
 
     public function getUsersByDivision($divisionId)
     {
         $users = User::where('division_id', $divisionId)
-            ->where('group', 'user')
+            ->where('role', 'user')
             ->select('id', 'name')
             ->orderBy('name')
             ->get();

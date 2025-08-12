@@ -79,6 +79,47 @@
                 padding: 0.25rem 0.375rem;
             }
         }
+
+        /* App Brand Link Styles for Admin */
+        .app-brand-link {
+            text-decoration: none !important;
+            transition: all 0.3s ease;
+        }
+        
+        .app-brand-link:hover {
+            transform: translateY(-1px);
+            text-decoration: none !important;
+        }
+        
+        .app-brand-link:hover .app-brand-text {
+            color: #696cff !important;
+        }
+        
+        .app-brand-link:hover .app-brand-logo img {
+            transform: scale(1.1);
+            transition: transform 0.3s ease;
+        }
+
+        /* Custom Background Subtle Classes */
+        .bg-primary-subtle {
+            background-color: rgba(13, 110, 253, 0.1) !important;
+        }
+        
+        .bg-success-subtle {
+            background-color: rgba(25, 135, 84, 0.1) !important;
+        }
+        
+        .bg-warning-subtle {
+            background-color: rgba(255, 193, 7, 0.1) !important;
+        }
+        
+        .bg-danger-subtle {
+            background-color: rgba(220, 53, 69, 0.1) !important;
+        }
+        
+        .bg-info-subtle {
+            background-color: rgba(13, 202, 240, 0.1) !important;
+        }
     </style>
 
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>

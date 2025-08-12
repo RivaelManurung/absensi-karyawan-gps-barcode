@@ -37,4 +37,17 @@ class DivisionController extends Controller
             return back()->with('error', 'Gagal menghapus divisi. Masih ada karyawan yang terhubung.');
         }
     }
+
+    /**
+     * Get users for a specific division (AJAX endpoint for reports)
+     */
+    public function getUsers(Division $division)
+    {
+        $users = $division->users()
+            ->select('id', 'name', 'employee_id')
+            ->orderBy('name')
+            ->get();
+
+        return response()->json($users);
+    }
 }

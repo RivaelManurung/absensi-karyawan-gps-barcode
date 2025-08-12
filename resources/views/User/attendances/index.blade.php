@@ -1,4 +1,4 @@
-@extends('user.layout.single-page')
+@extends('User.Layout.single-page')
 
 @section('title', 'Dashboard Karyawan')
 
@@ -27,7 +27,65 @@
     <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
         <div class="d-flex align-items-center">
             <i class="bx bx-check-circle me-2 fs-4"></i>
-            <div>{{ session('success') }}</div>
+            <div>
+                <strong>Berhasil!</strong> {{ session('success') }}
+                
+                {{-- Location Info for Success --}}
+                @if(session('location_info'))
+                <div class="mt-2 small">
+                    <i class="bx bx-map-pin me-1"></i>
+                    <strong>Lokasi:</strong> {{ session('location_info')['coordinates'] }} 
+                    (Akurasi: {{ session('location_info')['accuracy'] }}, 
+                    Kualitas: {{ session('location_info')['quality'] }})
+                </div>
+                @endif
+
+                {{-- Attendance Details --}}
+                @if(session('attendance_details'))
+                <div class="mt-2 small">
+                    <div class="row g-2">
+                        <div class="col-6"><i class="bx bx-map me-1"></i> {{ session('attendance_details')['location'] }}</div>
+                        <div class="col-6"><i class="bx bx-target-lock me-1"></i> {{ session('attendance_details')['distance'] }}</div>
+                        <div class="col-6"><i class="bx bx-time me-1"></i> {{ session('attendance_details')['time'] }}</div>
+                        <div class="col-6"><i class="bx bx-check-shield me-1"></i> {{ session('attendance_details')['status'] }}</div>
+                    </div>
+                </div>
+                @endif
+
+                {{-- Checkout Details --}}
+                @if(session('checkout_details'))
+                <div class="mt-2 small">
+                    <div class="row g-2">
+                        <div class="col-6"><i class="bx bx-time me-1"></i> {{ session('checkout_details')['time'] }}</div>
+                        <div class="col-6"><i class="bx bx-timer me-1"></i> {{ session('checkout_details')['duration'] }}</div>
+                        <div class="col-6"><i class="bx bx-target-lock me-1"></i> {{ session('checkout_details')['distance'] }}</div>
+                        <div class="col-6"><i class="bx bx-wifi me-1"></i> {{ session('checkout_details')['accuracy'] }}</div>
+                    </div>
+                </div>
+                @endif
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
+
+    @if (session('warning'))
+    <div class="alert alert-warning alert-dismissible fade show border-0 shadow-sm" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="bx bx-error-circle me-2 fs-4"></i>
+            <div>
+                <strong>Peringatan!</strong> {{ session('warning') }}
+                
+                {{-- Location Info for Warning --}}
+                @if(session('location_info'))
+                <div class="mt-2 small">
+                    <i class="bx bx-map-pin me-1"></i>
+                    <strong>Lokasi Anda:</strong> {{ session('location_info')['coordinates'] }} 
+                    (Akurasi: {{ session('location_info')['accuracy'] }}, 
+                    Kualitas: {{ session('location_info')['quality'] }})
+                </div>
+                @endif
+            </div>
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
@@ -37,7 +95,47 @@
     <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
         <div class="d-flex align-items-center">
             <i class="bx bx-error-circle me-2 fs-4"></i>
-            <div>{{ session('error') }}</div>
+            <div>
+                <strong>Error!</strong> {{ session('error') }}
+                
+                {{-- Location Info for Error --}}
+                @if(session('location_info'))
+                <div class="mt-2 small">
+                    <i class="bx bx-map-pin me-1"></i>
+                    <strong>Lokasi Anda:</strong> {{ session('location_info')['coordinates'] }} 
+                    (Akurasi: {{ session('location_info')['accuracy'] }}, 
+                    Kualitas: {{ session('location_info')['quality'] }})
+                </div>
+                @endif
+
+                {{-- Barcode Info --}}
+                @if(session('barcode_info'))
+                <div class="mt-1 small">
+                    <i class="bx bx-qr me-1"></i> {{ session('barcode_info') }}
+                </div>
+                @endif
+
+                {{-- Distance Info --}}
+                @if(session('distance_info'))
+                <div class="mt-1 small">
+                    <i class="bx bx-target-lock me-1"></i> {{ session('distance_info') }}
+                </div>
+                @endif
+
+                {{-- Barcode Error --}}
+                @if(session('barcode_error'))
+                <div class="mt-1 small">
+                    <i class="bx bx-scan me-1"></i> {{ session('barcode_error') }}
+                </div>
+                @endif
+
+                {{-- Technical Error --}}
+                @if(session('technical_error'))
+                <div class="mt-1 small text-muted">
+                    <i class="bx bx-bug me-1"></i> {{ session('technical_error') }}
+                </div>
+                @endif
+            </div>
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
@@ -116,6 +214,15 @@
                                         @csrf
                                         <input type="hidden" name="latitude" class="latitude-input">
                                         <input type="hidden" name="longitude" class="longitude-input">
+                                        <input type="hidden" name="accuracy" class="accuracy-input">
+                                        
+                                        {{-- GPS Status Display --}}
+                                        <div class="mb-3 text-center">
+                                            <div class="gps-status">
+                                                <i class="bx bx-loader-alt bx-spin text-warning"></i> Mencari GPS...
+                                            </div>
+                                            <div class="current-location-info"></div>
+                                        </div>
                                         
                                         <div class="mb-4">
                                             <div class="input-group input-group-lg shadow-sm">
@@ -231,6 +338,15 @@
                                         @csrf
                                         <input type="hidden" name="latitude" class="latitude-input">
                                         <input type="hidden" name="longitude" class="longitude-input">
+                                        <input type="hidden" name="accuracy" class="accuracy-input">
+                                        
+                                        {{-- GPS Status Display for Checkout --}}
+                                        <div class="mb-3 text-center">
+                                            <div class="gps-status">
+                                                <i class="bx bx-loader-alt bx-spin text-warning"></i> Mencari GPS...
+                                            </div>
+                                            <div class="current-location-info"></div>
+                                        </div>
                                         
                                         <button type="submit" class="btn btn-danger btn-lg px-5 py-3 rounded-pill shadow-sm">
                                             <i class="bx bx-log-out me-2"></i>
@@ -588,25 +704,159 @@ document.addEventListener('DOMContentLoaded', function() {
     updateClock();
     setInterval(updateClock, 1000);
 
-    // Get and fill GPS location for all forms
+    // Get and fill GPS location for all forms with enhanced monitoring
+    let currentPosition = null;
+    let gpsWatchId = null;
+    
+    function updateGPSStatus(status, accuracy = null, error = null) {
+        const statusElements = document.querySelectorAll('.gps-status');
+        statusElements.forEach(element => {
+            if (status === 'searching') {
+                element.innerHTML = '<i class="bx bx-loader-alt bx-spin text-warning"></i> Mencari GPS...';
+                element.className = 'gps-status text-warning small';
+            } else if (status === 'found') {
+                const quality = accuracy <= 5 ? 'Sangat Baik' : 
+                               accuracy <= 15 ? 'Baik' : 
+                               accuracy <= 50 ? 'Cukup' : 'Buruk';
+                const color = accuracy <= 15 ? 'success' : accuracy <= 50 ? 'warning' : 'danger';
+                element.innerHTML = `<i class="bx bx-wifi text-${color}"></i> GPS: ${quality} (${Math.round(accuracy)}m)`;
+                element.className = `gps-status text-${color} small`;
+            } else if (status === 'error') {
+                element.innerHTML = `<i class="bx bx-wifi-off text-danger"></i> GPS Error: ${error}`;
+                element.className = 'gps-status text-danger small';
+            }
+        });
+    }
+
     function getAndFillLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    const lat = position.coords.latitude;
-                    const long = position.coords.longitude;
-                    document.querySelectorAll('.latitude-input').forEach(input => input.value = lat);
-                    document.querySelectorAll('.longitude-input').forEach(input => input.value = long);
-                },
-                function(error) {
-                    console.warn('Geolocation error:', error);
-                },
-                {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 60000
+        if (!navigator.geolocation) {
+            updateGPSStatus('error', null, 'GPS tidak tersedia');
+            return;
+        }
+
+        updateGPSStatus('searching');
+
+        // Stop previous watch if exists
+        if (gpsWatchId) {
+            navigator.geolocation.clearWatch(gpsWatchId);
+        }
+
+        const options = {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+        };
+
+        gpsWatchId = navigator.geolocation.watchPosition(
+            function(position) {
+                currentPosition = position;
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const accuracy = position.coords.accuracy;
+
+                // Update all latitude inputs
+                document.querySelectorAll('.latitude-input').forEach(input => {
+                    input.value = lat;
+                });
+                
+                // Update all longitude inputs
+                document.querySelectorAll('.longitude-input').forEach(input => {
+                    input.value = lng;
+                });
+
+                // Update all accuracy inputs
+                document.querySelectorAll('.accuracy-input').forEach(input => {
+                    input.value = accuracy;
+                });
+
+                // Update GPS status display
+                updateGPSStatus('found', accuracy);
+
+                // Update location info display
+                const locationInfoElements = document.querySelectorAll('.current-location-info');
+                locationInfoElements.forEach(element => {
+                    element.innerHTML = `
+                        <div class="small text-muted mt-2">
+                            <i class="bx bx-current-location me-1"></i>
+                            Lokasi Saat Ini: ${lat.toFixed(6)}, ${lng.toFixed(6)}
+                            <br>
+                            <i class="bx bx-wifi me-1"></i>
+                            Akurasi GPS: ${Math.round(accuracy)} meter
+                        </div>
+                    `;
+                });
+
+                // Show warning if accuracy is poor
+                if (accuracy > 50) {
+                    showGPSWarning(accuracy);
                 }
-            );
+            },
+            function(error) {
+                let errorMsg = 'Tidak diketahui';
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMsg = 'Akses lokasi ditolak';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMsg = 'Lokasi tidak tersedia';
+                        break;
+                    case error.TIMEOUT:
+                        errorMsg = 'Timeout mencari lokasi';
+                        break;
+                }
+                updateGPSStatus('error', null, errorMsg);
+            },
+            options
+        );
+    }
+
+    function showGPSWarning(accuracy) {
+        // Remove existing warning first
+        const existingWarning = document.querySelector('.gps-warning-alert');
+        if (existingWarning) {
+            existingWarning.remove();
+        }
+
+        // Determine warning level and message based on accuracy
+        let alertClass, iconClass, warningTitle, warningMessage;
+        
+        if (accuracy > 200) {
+            alertClass = 'alert-danger';
+            iconClass = 'bx-wifi-off';
+            warningTitle = 'GPS Sangat Buruk!';
+            warningMessage = `Akurasi GPS ${Math.round(accuracy)} meter. Absensi mungkin gagal. Coba pindah ke tempat terbuka.`;
+        } else if (accuracy > 100) {
+            alertClass = 'alert-warning';
+            iconClass = 'bx-wifi-1';
+            warningTitle = 'GPS Kurang Baik';
+            warningMessage = `Akurasi GPS ${Math.round(accuracy)} meter. Untuk hasil optimal, pindah ke area yang lebih terbuka.`;
+        } else if (accuracy > 50) {
+            alertClass = 'alert-info';
+            iconClass = 'bx-wifi-2';
+            warningTitle = 'GPS Cukup';
+            warningMessage = `Akurasi GPS ${Math.round(accuracy)} meter. Sinyal GPS cukup untuk absensi.`;
+        } else {
+            // Good GPS, no warning needed
+            return;
+        }
+
+        const warningDiv = document.createElement('div');
+        warningDiv.className = `alert ${alertClass} alert-dismissible fade show border-0 shadow-sm gps-warning-alert`;
+        warningDiv.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="bx ${iconClass} me-2 fs-4"></i>
+                <div>
+                    <strong>${warningTitle}</strong> 
+                    ${warningMessage}
+                </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+            
+        // Insert after existing alerts
+        const firstCard = document.querySelector('.card');
+        if (firstCard) {
+            firstCard.parentNode.insertBefore(warningDiv, firstCard);
         }
     }
     
