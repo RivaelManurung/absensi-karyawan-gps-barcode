@@ -1,3 +1,4 @@
+
 # 🏢 Sistem Absensi Karyawan GPS & Barcode - Full Stack Application
 
 <div align="center">
@@ -17,73 +18,69 @@
 ## 🎯 **Fitur Lengkap**
 
 ### ✅ **Admin Dashboard**
-✅ Dashboard analitik real-time dengan charts  
-✅ Manajemen karyawan lengkap (CRUD)  
-✅ Sistem approval pengajuan izin  
-✅ Export laporan Excel & PDF profesional  
-✅ Manajemen divisi, jabatan & shift kerja  
-✅ Kontrol lokasi absensi dengan QR code  
-✅ Profile admin dengan upload foto  
+- Dashboard analitik real-time dengan charts  
+- Manajemen karyawan lengkap (CRUD)  
+- Sistem approval pengajuan izin  
+- Export laporan Excel & PDF profesional  
+- Manajemen divisi, jabatan & shift kerja  
+- Kontrol lokasi absensi dengan QR code  
+- Profile admin dengan upload foto  
 
 ### ✅ **Employee Portal**
-✅ Absensi GPS dengan validasi lokasi  
-✅ QR Code scanner untuk check-in/out  
-✅ Form pengajuan izin/sakit dengan attachment  
-✅ History kehadiran personal  
-✅ Interface mobile-friendly & responsive  
-✅ Real-time status notification  
+- Absensi GPS dengan validasi lokasi  
+- QR Code scanner untuk check-in/out  
+- Form pengajuan izin/sakit dengan attachment  
+- History kehadiran personal  
+- Interface mobile-friendly & responsive  
+- Real-time status notification  
 
 ### ✅ **Security & Validation**
-✅ GPS radius validation untuk anti-fraud  
-✅ Role-based authentication (Admin/User)  
-✅ CSRF protection & XSS prevention  
-✅ File upload validation & security  
-✅ Anti-duplicate attendance system  
+- GPS radius validation untuk anti-fraud  
+- Role-based authentication (Admin/User)  
+- CSRF protection & XSS prevention  
+- File upload validation & security  
+- Anti-duplicate attendance system  
 
 ### ✅ **Advanced Features**
-✅ Multi-level icon fallback system  
-✅ Professional report generation  
-✅ Responsive design untuk semua device  
-✅ Loading states & progress indicators  
-✅ Toast notifications & modal confirmations  
-✅ Fast loading performance  
+- Multi-level icon fallback system  
+- Professional report generation  
+- Responsive design untuk semua device  
+- Loading states & progress indicators  
+- Toast notifications & modal confirmations  
+- Fast loading performance  
 
 ---
 
 ## 🛠️ **Template Siap Pakai**
 
-🎨 **Admin Dashboard** dengan analytics modern  
-📱 **Mobile-first** employee interface  
-📊 **Report system** dengan export Excel/PDF  
-👥 **User management** lengkap dengan role  
-📍 **Location control** dengan GPS & QR code  
-🔒 **Security layer** berlapis untuk data protection  
-⚡ **Performance optimized** dengan caching  
+- **Admin Dashboard** dengan analytics modern  
+- **Mobile-first** employee interface  
+- **Report system** dengan export Excel/PDF  
+- **User management** lengkap dengan role  
+- **Location control** dengan GPS & QR code  
+- **Security layer** berlapis untuk data protection  
+- **Performance optimized** dengan caching  
 
 ---
 
 ## 💻 **Tech Stack Modern**
 
-<div align="center">
-
 | Backend | Frontend | Database | Tools |
 |---------|----------|----------|-------|
-| ![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white) | ![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white) | ![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white) | ![Composer](https://img.shields.io/badge/Composer-885630?style=for-the-badge&logo=composer&logoColor=white) |
-| ![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?style=for-the-badge&logo=php&logoColor=white) | ![JavaScript](https://img.shields.io/badge/JavaScript-ES6-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black) | ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white) | ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white) |
-
-</div>
+| Laravel 12.x | Bootstrap 5.3 | MySQL 8.0 | Composer |
+| PHP 8.2 | JavaScript ES6 | SQLite | Git |
 
 ---
 
-## � **Quick Start**
+## 🚀 **Quick Start**
 
 ### **Prerequisites**
 ```bash
-✅ PHP >= 8.2
-✅ Composer
-✅ MySQL/MariaDB  
-✅ Node.js & NPM
-✅ Git
+PHP >= 8.2
+Composer
+MySQL/MariaDB  
+Node.js & NPM
+Git
 ```
 
 ### **Installation**
@@ -112,390 +109,77 @@ npm run build
 php artisan serve
 ```
 
-### **Default Login**
+**Default Login**
 ```bash
-👨‍💼 Admin: admin@example.com / password
-👨‍💻 User:  user@example.com / password
+Admin: admin@example.com / password
+User:  user@example.com / password
 ```
 
 ---
 
 ## 📱 **Screenshots & Preview**
 
-<div align="center">
-
 ### **Admin Dashboard**
 ![Dashboard](public/assets/dashboard.png)
 
 *Dashboard analitik dengan real-time statistics*
 
-### **Mobile Attendance**
-*Mobile-first design untuk kemudahan absensi*
-
-### **Report System**
-*Export professional dalam format Excel & PDF*
-
-</div>
-
 ---
 
 ## 🎯 **Cocok Untuk**
-
-✅ **Perusahaan** yang butuh sistem absensi modern  
-✅ **Developer** yang ingin full-stack application siap pakai  
-✅ **Base project** untuk development HR system  
-✅ **Portfolio** atau company profile  
-✅ **Learning** Laravel best practices  
+- **Perusahaan** yang butuh sistem absensi modern  
+- **Developer** yang ingin full-stack application siap pakai  
+- **Base project** untuk development HR system  
+- **Portfolio** atau company profile  
+- **Learning** Laravel best practices  
 
 ---
 
 ## 🔧 **Database Schema**
-
 ```sql
-📋 users          - Data karyawan & admin
-⏰ attendances    - Record kehadiran harian  
-🏢 divisions      - Data divisi/departemen
-💼 job_titles     - Data jabatan/posisi
-🕐 shifts         - Pengaturan shift kerja
-📍 barcodes       - Lokasi dengan QR code
-📊 statuses       - Status kehadiran
+users          - Data karyawan & admin
+attendances    - Record kehadiran harian  
+divisions      - Data divisi/departemen
+job_titles     - Data jabatan/posisi
+shifts         - Pengaturan shift kerja
+barcodes       - Lokasi dengan QR code
+statuses       - Status kehadiran
 ```
-
----
-
-## � **Performance Features**
-
-⚡ **Database Optimization** dengan indexing  
-🎨 **Asset Minification** untuk loading cepat  
-📱 **Mobile-First Design** responsive  
-🔄 **Lazy Loading** untuk performa optimal  
-💾 **Smart Caching** system  
-🖼️ **Image Compression** otomatis  
 
 ---
 
 ## 🛡️ **Security Features**
-
-🔐 **Laravel Sanctum** authentication  
-🛡️ **CSRF Protection** built-in  
-🚫 **XSS Prevention** otomatis  
-📂 **File Upload** validation  
-🌍 **GPS Validation** untuk lokasi  
-🔍 **SQL Injection** prevention  
+- Laravel Sanctum authentication  
+- CSRF Protection built-in  
+- XSS Prevention otomatis  
+- File Upload validation  
+- GPS Validation untuk lokasi  
+- SQL Injection prevention  
 
 ---
 
 ## 📞 **Support & Community**
-
-🔗 **Documentation**: [Wiki lengkap tersedia](https://github.com/RivaelManurung/absensi-karyawan-gps-barcode/wiki)  
-🐛 **Bug Reports**: [Issue tracker](https://github.com/RivaelManurung/absensi-karyawan-gps-barcode/issues)  
-💡 **Feature Requests**: [Discussions](https://github.com/RivaelManurung/absensi-karyawan-gps-barcode/discussions)  
-📧 **Email**: rivael.manurung@example.com  
+- **Documentation**: [Wiki lengkap tersedia](https://github.com/RivaelManurung/absensi-karyawan-gps-barcode/wiki)  
+- **Bug Reports**: [Issue tracker](https://github.com/RivaelManurung/absensi-karyawan-gps-barcode/issues)  
+- **Feature Requests**: [Discussions](https://github.com/RivaelManurung/absensi-karyawan-gps-barcode/discussions)  
+- **Email**: rivael.manurung@example.com  
 
 ---
 
 ## 📝 **Note**
-
-> **Ini adalah full-stack application siap produksi** dengan fitur lengkap untuk manajemen absensi karyawan. Backend menggunakan Laravel dengan security berlapis, frontend responsive dengan Bootstrap, dan database MySQL yang optimized.
+> **Ini adalah full-stack application siap produksi** dengan fitur lengkap untuk manajemen absensi karyawan.
 
 ---
 
 ## 🤝 **Contributing**
-
 Kontribusi sangat diterima! Lihat [CONTRIBUTING.md](CONTRIBUTING.md) untuk panduan.
 
-## 📄 **License**
+---
 
+## 📄 **License**
 MIT License - lihat [LICENSE](LICENSE) untuk detail.
 
 ---
 
-<div align="center">
-
-**Made with ❤️ by [Rivael Manurung](https://github.com/RivaelManurung)**
-
+**Made with ❤️ by [Rivael Manurung](https://github.com/RivaelManurung)**  
 ⭐ **Star this repo jika bermanfaat!**
-
-</div>
-
-### 👨‍💻 Untuk Karyawan
-- **📱 Absensi Mobile-Friendly** - Interface responsif untuk semua device
-- **🌍 GPS Tracking** - Verifikasi lokasi saat absensi
-- **📷 QR Code Scanner** - Scan barcode lokasi untuk akurasi
-- **📝 Pengajuan Izin** - Form pengajuan sakit/izin dengan attachment
-- **📊 Riwayat Kehadiran** - Tracking personal attendance history
-- **🔔 Notifikasi Real-time** - Alert status pengajuan izin
-
-### 🛡️ Keamanan & Validasi
-- **🔐 Autentikasi Aman** - Laravel Sanctum authentication
-- **📍 Validasi GPS** - Pembatasan radius lokasi absensi
-- **🔍 Validasi Barcode** - Verifikasi lokasi dengan QR code
-- **⏱️ Anti-Fraud System** - Pencegahan absensi ganda
-- **🛠️ Role-based Access** - Kontrol akses berdasarkan peran
-
-## 🚀 Tech Stack
-
-### Backend
-- **Framework**: Laravel 12.x
-- **Language**: PHP 8.2+
-- **Database**: MySQL 8.0+
-- **Authentication**: Laravel Sanctum
-
-### Frontend
-- **CSS Framework**: Bootstrap 5.3
-- **Icons**: Boxicons, Font Awesome
-- **JavaScript**: Vanilla JS, jQuery
-- **Maps**: Google Maps API / Leaflet
-
-### Libraries & Packages
-- **Excel Export**: `maatwebsite/excel`
-- **PDF Generation**: `barryvdh/laravel-dompdf`
-- **QR Code**: `simplesoftwareio/simple-qrcode`
-- **Geolocation**: Browser Geolocation API
-
-## 📦 Instalasi
-
-### Prasyarat
-```bash
-- PHP >= 8.2
-- Composer
-- Node.js & NPM
-- MySQL/MariaDB
-- Git
-```
-
-### Langkah Instalasi
-
-1. **Clone Repository**
-   ```bash
-   git clone https://github.com/RivaelManurung/absensi-karyawan-gps-barcode.git
-   cd absensi-karyawan-gps-barcode
-   ```
-
-2. **Install Dependencies**
-   ```bash
-   composer install
-   npm install
-   ```
-
-3. **Environment Setup**
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
-
-4. **Database Configuration**
-   ```env
-   DB_CONNECTION=mysql
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
-   DB_DATABASE=absensi_db
-   DB_USERNAME=your_username
-   DB_PASSWORD=your_password
-   ```
-
-5. **Database Migration & Seeding**
-   ```bash
-   php artisan migrate
-   php artisan db:seed
-   ```
-
-6. **Storage Link**
-   ```bash
-   php artisan storage:link
-   ```
-
-7. **Build Assets**
-   ```bash
-   npm run build
-   # atau untuk development
-   npm run dev
-   ```
-
-8. **Run Application**
-   ```bash
-   php artisan serve
-   ```
-
-Akses aplikasi di `http://localhost:8000`
-
-## 👤 Default Login
-
-### Admin Account
-```
-Email: admin@example.com
-Password: password
-```
-
-### User Account
-```
-Email: user@example.com  
-Password: password
-```
-
-## 📱 Penggunaan
-
-### Untuk Admin
-1. **Login** dengan akun admin
-2. **Dashboard** - Lihat overview kehadiran harian
-3. **Manajemen Data** - Kelola karyawan, divisi, dan jabatan
-4. **Setup Lokasi** - Tambah titik absensi dengan barcode
-5. **Monitor** - Pantau kehadiran real-time
-6. **Laporan** - Generate dan export laporan
-
-### Untuk Karyawan
-1. **Login** dengan akun karyawan
-2. **Absensi** - Lakukan check-in/check-out
-3. **Verifikasi** - Pastikan GPS aktif dan scan barcode lokasi
-4. **Pengajuan** - Submit izin sakit/cuti jika diperlukan
-5. **Riwayat** - Cek history kehadiran pribadi
-
-## 📊 Screenshots
-
-### Admin Dashboard
-![Admin Dashboard](public/assets/dashboard.png)
-
-### Mobile Attendance
-*Screenshots akan ditambahkan*
-
-## 🗂️ Struktur Database
-
-### Tabel Utama
-- `users` - Data karyawan dan admin
-- `attendances` - Record kehadiran harian
-- `divisions` - Data divisi/departemen
-- `job_titles` - Data jabatan/posisi
-- `shifts` - Pengaturan shift kerja
-- `barcodes` - Data lokasi dengan QR code
-- `statuses` - Status kehadiran (hadir, izin, sakit, dll)
-
-## 🔧 Konfigurasi
-
-### GPS Settings
-```php
-// config/app.php
-'gps_radius' => 100, // meter
-'gps_accuracy' => 50, // meter
-```
-
-### Barcode Settings
-```php
-// Generate QR code untuk lokasi
-$barcode = QrCode::size(200)->generate($location_code);
-```
-
-## 🤝 Contributing
-
-Kami menerima kontribusi dari developer manapun! Berikut cara berkontribusi:
-
-1. **Fork** repository ini
-2. **Create** feature branch (`git checkout -b feature/AmazingFeature`)
-3. **Commit** perubahan (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** ke branch (`git push origin feature/AmazingFeature`)
-5. **Open** Pull Request
-
-### Code Style
-- Ikuti [PSR-12](https://www.php-fig.org/psr/psr-12/) untuk PHP
-- Gunakan [Laravel Conventions](https://laravel.com/docs/contributions#coding-style)
-- Tambahkan dokumentasi untuk fitur baru
-
-## 📝 Changelog
-
-### v1.0.0 (2025-08-13)
-- ✨ Initial release
-- 🎉 Basic attendance system
-- 📍 GPS integration
-- 📱 QR code scanning
-- 📊 Admin dashboard
-- 📈 Report generation
-
-## 🐛 Bug Reports
-
-Jika menemukan bug, silakan buat [issue baru](https://github.com/RivaelManurung/absensi-karyawan-gps-barcode/issues) dengan detail:
-- Langkah reproduksi
-- Expected vs actual behavior
-- Screenshots (jika ada)
-- Environment info
-
-## 📄 License
-
-Proyek ini dilisensikan di bawah [MIT License](LICENSE) - lihat file LICENSE untuk detail lengkap.
-
-## 👨‍💻 Developer
-
-**Rivael Manurung**
-- GitHub: [@RivaelManurung](https://github.com/RivaelManurung)
-- Email: rivael.manurung@example.com
-
-## 🙏 Acknowledgments
-
-- [Laravel Framework](https://laravel.com) - PHP framework terbaik
-- [Bootstrap](https://getbootstrap.com) - UI framework responsif
-- [Boxicons](https://boxicons.com) - Icon library yang indah
-- [Google Maps](https://developers.google.com/maps) - GPS & mapping service
-
----
-
-<p align="center">
-  Made with ❤️ by <a href="https://github.com/RivaelManurung">Rivael Manurung</a>
-</p>
-
-<p align="center">
-  <sub>⭐ Jangan lupa berikan star jika proyek ini bermanfaat!</sub>
-</p>
-
-## About Laravel
-
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-#   a b s e n s i - k a r y a w a n - g p s - b a r c o d e 
- 
- 
