@@ -161,7 +161,12 @@
                                 <button class="nav-link rounded-pill px-4 py-3 fw-semibold" 
                                         data-bs-toggle="tab" data-bs-target="#tab-history" type="button" 
                                         role="tab" aria-selected="false">
-                                    <i class="bx bx-history me-2 fs-5"></i>
+                                    <i class="bx bx-history me-2 fs-5" 
+                                       data-fallback-fa="fas fa-history" 
+                                       data-fallback-emoji="📋"
+                                       style="font-size: 1.25rem !important; 
+                                              line-height: 1 !important; 
+                                              display: inline-block !important;"></i>
                                     <span class="d-none d-md-inline">Riwayat Absensi</span>
                                     <span class="d-md-none">Riwayat</span>
                                 </button>
@@ -170,7 +175,12 @@
                                 <button class="nav-link rounded-pill px-4 py-3 fw-semibold" 
                                         data-bs-toggle="tab" data-bs-target="#tab-request" type="button" 
                                         role="tab" aria-selected="false">
-                                    <i class="bx bx-envelope me-2 fs-5"></i>
+                                    <i class="bx bx-envelope me-2 fs-5" 
+                                       data-fallback-fa="fas fa-envelope" 
+                                       data-fallback-emoji="✉️"
+                                       style="font-size: 1.25rem !important; 
+                                              line-height: 1 !important; 
+                                              display: inline-block !important;"></i>
                                     <span class="d-none d-md-inline">Ajukan Izin</span>
                                     <span class="d-md-none">Izin</span>
                                 </button>
@@ -191,9 +201,10 @@
                     <div class="card border-0 shadow-lg">
                         <div class="card-body p-5 text-center">
                             <div class="mb-4">
-                                <div class="bg-primary-subtle rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
-                                     style="width: 80px; height: 80px;">
-                                    <i class="bx bx-fingerprint text-primary" style="font-size: 2.5rem;"></i>
+                                <div class="icon-circle icon-circle-primary">
+                                    <i class="bx bx-fingerprint attendance-icon primary"></i>
+                                    <i class="fas fa-fingerprint attendance-icon primary" style="display: none;"></i>
+                                    <span class="attendance-icon primary" style="display: none; font-size: 2.5rem;">🔐</span>
                                 </div>
                                 <h4 class="fw-bold mb-2">Absensi Kehadiran</h4>
                                 <p class="text-muted">{{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}</p>
@@ -245,9 +256,10 @@
                             @elseif ($todayAttendance->status && $todayAttendance->status->name === 'pending')
                                 {{-- Pending Leave Request --}}
                                 <div class="text-center">
-                                    <div class="bg-warning-subtle rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
-                                         style="width: 80px; height: 80px;">
-                                        <i class="bx bx-hourglass text-warning" style="font-size: 2.5rem;"></i>
+                                    <div class="icon-circle icon-circle-warning">
+                                        <i class="bx bx-hourglass attendance-icon warning"></i>
+                                        <i class="fas fa-hourglass attendance-icon warning" style="display: none;"></i>
+                                        <span class="attendance-icon warning" style="display: none; font-size: 2.5rem;">⏳</span>
                                     </div>
                                     <h5 class="fw-bold text-warning mb-2">Pengajuan Menunggu Persetujuan</h5>
                                     @if($todayAttendance->request_type)
@@ -358,9 +370,10 @@
                             @else
                                 {{-- Completed Message --}}
                                 <div class="text-center">
-                                    <div class="bg-success-subtle rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
-                                         style="width: 80px; height: 80px;">
-                                        <i class="bx bx-check-double text-success" style="font-size: 2.5rem;"></i>
+                                    <div class="icon-circle icon-circle-success">
+                                        <i class="bx bx-check-double attendance-icon success"></i>
+                                        <i class="fas fa-check-double attendance-icon success" style="display: none;"></i>
+                                        <span class="attendance-icon success" style="display: none; font-size: 2.5rem;">✅</span>
                                     </div>
                                     <h5 class="fw-bold text-success mb-2">Absensi Hari Ini Selesai</h5>
                                     <p class="text-muted">Terima kasih, Anda sudah menyelesaikan absensi untuk hari ini.</p>
@@ -509,11 +522,12 @@
                     <div class="card border-0 shadow-sm">
                         <div class="card-header bg-transparent border-bottom-0 p-4">
                             <div class="d-flex align-items-center">
-                                <div class="bg-warning-subtle rounded-circle d-flex align-items-center justify-content-center me-3" 
-                                     style="width: 50px; height: 50px;">
-                                    <i class="bx bx-envelope text-warning fs-4"></i>
+                                <div class="icon-circle icon-circle-warning" style="width: 50px !important; height: 50px !important;">
+                                    <i class="bx bx-envelope attendance-icon warning" style="font-size: 1.5rem !important;"></i>
+                                    <i class="fas fa-envelope attendance-icon warning" style="display: none; font-size: 1.5rem !important;"></i>
+                                    <span class="attendance-icon warning" style="display: none; font-size: 1.5rem;">📧</span>
                                 </div>
-                                <div>
+                                <div class="ms-3">
                                     <h5 class="mb-1 fw-bold">Pengajuan Izin / Sakit</h5>
                                     <p class="text-muted mb-0 small">Ajukan permohonan izin atau sakit untuk hari ini</p>
                                 </div>
@@ -649,12 +663,66 @@
         background-color: rgba(13, 202, 240, 0.1) !important;
     }
     
+    /* Enhanced icon background styles */
+    .bg-primary-icon {
+        background-color: rgba(13, 110, 253, 0.1) !important;
+        border: 2px solid rgba(13, 110, 253, 0.2) !important;
+    }
+    
+    .bg-success-icon {
+        background-color: rgba(25, 135, 84, 0.1) !important;
+        border: 2px solid rgba(25, 135, 84, 0.2) !important;
+    }
+    
+    .bg-warning-icon {
+        background-color: rgba(255, 193, 7, 0.1) !important;
+        border: 2px solid rgba(255, 193, 7, 0.2) !important;
+    }
+    
+    .bg-danger-icon {
+        background-color: rgba(220, 53, 69, 0.1) !important;
+        border: 2px solid rgba(220, 53, 69, 0.2) !important;
+    }
+    
+    /* Fallback for subtle backgrounds */
     .bg-warning-subtle {
         background-color: rgba(255, 193, 7, 0.1) !important;
     }
     
     .bg-danger-subtle {
         background-color: rgba(220, 53, 69, 0.1) !important;
+    }
+    
+    .bg-primary-subtle {
+        background-color: rgba(13, 110, 253, 0.1) !important;
+    }
+    
+    .bg-success-subtle {
+        background-color: rgba(25, 135, 84, 0.1) !important;
+    }
+    
+    /* Enhanced icon circle styles */
+    .icon-circle {
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .icon-circle:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Ensure all icon variations are properly sized */
+    .icon-circle .attendance-icon {
+        line-height: 1 !important;
+        vertical-align: middle !important;
+    }
+    
+    /* Force visibility for emoji fallbacks */
+    .icon-circle span.attendance-icon {
+        font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif !important;
+        font-style: normal !important;
+        text-rendering: optimizeLegibility !important;
     }
     
     #current-time {
@@ -957,6 +1025,51 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('button[type="submit"]').forEach(btn => {
         btn.setAttribute('data-original-text', btn.innerHTML);
     });
+    
+    // Icon fallback system
+    function checkAndFallbackIcons() {
+        setTimeout(() => {
+            // Check if Boxicons loaded
+            const testIcon = document.createElement('i');
+            testIcon.className = 'bx bx-fingerprint';
+            testIcon.style.position = 'absolute';
+            testIcon.style.left = '-9999px';
+            document.body.appendChild(testIcon);
+            
+            const computedStyle = window.getComputedStyle(testIcon, ':before');
+            const content = computedStyle.getPropertyValue('content');
+            
+            document.body.removeChild(testIcon);
+            
+            // If Boxicons didn't load properly, show Font Awesome fallback
+            if (!content || content === 'none' || content === '""') {
+                console.log('Boxicons not loaded, switching to Font Awesome');
+                document.querySelectorAll('.bx').forEach(icon => {
+                    icon.style.display = 'none';
+                    const parent = icon.parentElement;
+                    const faIcon = parent.querySelector('.fas, .far, .fab');
+                    if (faIcon) {
+                        faIcon.style.display = 'block';
+                    } else {
+                        // Show emoji fallback
+                        const spanIcon = parent.querySelector('span.attendance-icon');
+                        if (spanIcon) {
+                            spanIcon.style.display = 'block';
+                        }
+                    }
+                });
+            } else {
+                console.log('Boxicons loaded successfully');
+            }
+        }, 1000);
+    }
+    
+    // Run icon check when page loads
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', checkAndFallbackIcons);
+    } else {
+        checkAndFallbackIcons();
+    }
 });
 </script>
 @endpush

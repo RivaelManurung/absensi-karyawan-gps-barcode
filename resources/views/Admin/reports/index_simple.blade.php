@@ -97,13 +97,13 @@
         </div>
     </div>
 
-    <!-- Filter & Export Card -->
+    <!-- Filter Card -->
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Filter Laporan & Export Data</h5>
+            <h5 class="mb-0">Filter Laporan</h5>
         </div>
         <div class="card-body">
-            <form method="GET" action="{{ route('admin.reports.index') }}" id="filterForm">
+            <form method="GET" action="{{ route('admin.reports.index') }}">
                 <div class="row">
                     <!-- Report Type -->
                     <div class="col-md-3 mb-3">
@@ -178,15 +178,6 @@
                         <a href="{{ route('admin.reports.index') }}" class="btn btn-outline-secondary">
                             <i class="bx bx-refresh me-1"></i>Reset
                         </a>
-                        
-                        <!-- Export Buttons -->
-                        <button type="button" onclick="exportData('excel')" class="btn btn-success">
-                            <i class="bx bx-file me-1"></i>Export Excel
-                        </button>
-                        
-                        <button type="button" onclick="exportData('pdf')" class="btn btn-danger">
-                            <i class="bx bx-file-blank me-1"></i>Export PDF
-                        </button>
                     </div>
                 </div>
             </form>
@@ -195,20 +186,38 @@
 
     <!-- Results Section -->
     @if(request('report_type', 'overview') == 'overview')
-        @include('Admin.reports.partials.overview')
+        @include('admin.reports.partials.overview')
     @elseif(request('report_type') == 'daily')
-        @include('Admin.reports.partials.daily')
+        @include('admin.reports.partials.daily')
     @elseif(request('report_type') == 'monthly')
-        @include('Admin.reports.partials.monthly')
+        @include('admin.reports.partials.monthly')
     @elseif(request('report_type') == 'employee')
-        @include('Admin.reports.partials.employee')
+        @include('admin.reports.partials.employee')
     @elseif(request('report_type') == 'division')
-        @include('Admin.reports.partials.division')
+        @include('admin.reports.partials.division')
     @elseif(request('report_type') == 'leave-requests')
-        @include('Admin.reports.partials.leave-requests')
+        @include('admin.reports.partials.leave-requests')
     @endif
 
-
+    <!-- Export Card -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Export Data</h5>
+        </div>
+        <div class="card-body">
+            <form method="GET" action="{{ route('admin.reports.export') }}" class="d-flex gap-2 flex-wrap">
+                @foreach(request()->all() as $key => $value)
+                    @if(!in_array($key, ['page']))
+                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                    @endif
+                @endforeach
+                
+                <button type="submit" name="format" value="pdf" class="btn btn-outline-danger">
+                    <i class="bx bx-file-blank me-1"></i>Export PDF
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -232,7 +241,7 @@ function loadUsers() {
     userSelect.innerHTML = '<option value="">Pilih Karyawan</option>';
     
     if (divisionId) {
-        fetch(`/admin/divisions/${divisionId}/users`)
+        fetch(`/admin/api/divisions/${divisionId}/users`)
             .then(response => response.json())
             .then(users => {
                 users.forEach(user => {
@@ -244,21 +253,6 @@ function loadUsers() {
             })
             .catch(error => console.error('Error loading users:', error));
     }
-}
-
-function exportData(format) {
-    const form = document.getElementById('filterForm');
-    const formData = new FormData(form);
-    
-    // Create export URL with current filters
-    const params = new URLSearchParams();
-    for (let [key, value] of formData.entries()) {
-        if (value) params.append(key, value);
-    }
-    params.append('format', format);
-    
-    // Open export in new window
-    window.open(`{{ route('admin.reports.export') }}?${params.toString()}`, '_blank');
 }
 
 // Initialize filters on page load

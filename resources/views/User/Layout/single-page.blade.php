@@ -9,15 +9,84 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet" />
+    
+    <!-- Font Awesome as primary icon font -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Boxicons - Multiple fallbacks -->
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" rel="stylesheet">
+    
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/core.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('assets/js/config.js') }}"></script>
     
-    <!-- Boxicons Fallback -->
+    <!-- Enhanced icon styles -->
     <style>
         @import url('https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css');
+        
+        /* Force icon display */
+        .icon-circle {
+            width: 80px !important;
+            height: 80px !important;
+            border-radius: 50% !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin-bottom: 1rem !important;
+            position: relative;
+        }
+        
+        .icon-circle-primary {
+            background: linear-gradient(135deg, rgba(13, 110, 253, 0.1), rgba(13, 110, 253, 0.2)) !important;
+            border: 3px solid rgba(13, 110, 253, 0.3) !important;
+        }
+        
+        .icon-circle-success {
+            background: linear-gradient(135deg, rgba(25, 135, 84, 0.1), rgba(25, 135, 84, 0.2)) !important;
+            border: 3px solid rgba(25, 135, 84, 0.3) !important;
+        }
+        
+        .icon-circle-warning {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 193, 7, 0.2)) !important;
+            border: 3px solid rgba(255, 193, 7, 0.3) !important;
+        }
+        
+        /* Ensure icons are always visible with fallbacks */
+        .attendance-icon {
+            font-size: 2.5rem !important;
+            display: block !important;
+        }
+        
+        .attendance-icon.primary { color: #0d6efd !important; }
+        .attendance-icon.success { color: #198754 !important; }
+        .attendance-icon.warning { color: #ffc107 !important; }
+        
+        /* Fallback for missing Boxicons */
+        .bx-fingerprint:before,
+        .fa-fingerprint:before {
+            content: "�" !important;
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif !important;
+        }
+        
+        .bx-check-double:before,
+        .fa-check-double:before {
+            content: "✅" !important;
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif !important;
+        }
+        
+        .bx-hourglass:before,
+        .fa-hourglass:before {
+            content: "⏳" !important;
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif !important;
+        }
+        
+        .bx-envelope:before,
+        .fa-envelope:before {
+            content: "📧" !important;
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif !important;
+        }
     </style>
     
     <style>

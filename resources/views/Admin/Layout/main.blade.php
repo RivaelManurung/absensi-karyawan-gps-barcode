@@ -18,6 +18,8 @@
         href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
         rel="stylesheet" />
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <!-- Font Awesome fallback -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/core.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
@@ -30,6 +32,19 @@
     @stack('styles')
 
     <style>
+        /* Icon fallback styles */
+        .menu-icon, [class*="bx-"], [class*="fa-"] {
+            font-size: 1.125rem !important;
+            line-height: 1 !important;
+            display: inline-block !important;
+            vertical-align: middle !important;
+        }
+        
+        /* Ensure emoji fallbacks are visible */
+        .menu-icon[style*="font-family: inherit"] {
+            font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif !important;
+            font-size: 1.2em !important;
+        }
         /* Custom Pagination Styles */
         .pagination {
             border-radius: 0.5rem;
@@ -150,27 +165,43 @@
                             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);"
                                     data-bs-toggle="dropdown">
-                                    {{-- PERBAIKAN: Avatar gambar diganti dengan ikon --}}
+                                    {{-- Avatar dengan foto profil atau fallback ke ikon --}}
                                     <div class="avatar avatar-online">
-                                        <span class="avatar-initial rounded-circle bg-primary"><i
-                                                class="bx bx-user"></i></span>
+                                        @if(Auth::user()->profile_photo_path)
+                                            <img src="{{ asset('storage/photos/' . Auth::user()->profile_photo_path) }}" 
+                                                 alt="Profile Photo" 
+                                                 class="w-px-40 h-px-40 rounded-circle"
+                                                 style="width: 40px !important; height: 40px !important; object-fit: cover; border-radius: 50% !important;">
+                                        @else
+                                            <span class="avatar-initial rounded-circle bg-primary"
+                                                  style="width: 40px !important; height: 40px !important; border-radius: 50% !important;">
+                                                <i class="bx bx-user"></i>
+                                            </span>
+                                        @endif
                                     </div>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li>
-                                        <a class="dropdown-item" href="#">
+                                        <a class="dropdown-item" href="{{ route('admin.profile.index') }}">
                                             <div class="d-flex">
                                                 <div class="flex-shrink-0 me-3">
                                                     <div class="avatar avatar-online">
-                                                        {{-- PERBAIKAN: Avatar gambar diganti dengan ikon --}}
-                                                        <span class="avatar-initial rounded-circle bg-primary"><i
-                                                                class="bx bx-user"></i></span>
+                                                        @if(Auth::user()->profile_photo_path)
+                                                            <img src="{{ asset('storage/photos/' . Auth::user()->profile_photo_path) }}" 
+                                                                 alt="Profile Photo" 
+                                                                 class="w-px-40 h-auto rounded-circle"
+                                                                 style="object-fit: cover;">
+                                                        @else
+                                                            <span class="avatar-initial rounded-circle bg-primary">
+                                                                <i class="bx bx-user"></i>
+                                                            </span>
+                                                        @endif
                                                     </div>
                                                 </div>
                                                 <div class="flex-grow-1">
                                                     {{-- Menampilkan nama lengkap user yang login --}}
-                                                    <span class="fw-medium d-block">{{ Auth::user()->fullname }}</span>
-                                                    <small class="text-muted">{{ ucfirst(Auth::user()->peran) }}</small>
+                                                    <span class="fw-medium d-block">{{ Auth::user()->name }}</span>
+                                                    <small class="text-muted">{{ ucfirst(Auth::user()->group) }}</small>
                                                 </div>
                                             </div>
                                         </a>
@@ -178,7 +209,15 @@
                                     <li>
                                         <div class="dropdown-divider"></div>
                                     </li>
-                                    {{-- PERBAIKAN: Menu "My Profile" dihapus --}}
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('admin.profile.index') }}">
+                                            <i class="bx bx-user me-2"></i>
+                                            <span class="align-middle">Profile Settings</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <div class="dropdown-divider"></div>
+                                    </li>
                                     <li>
                                         {{-- Form Logout yang aman --}}
                                         <form action="{{ route('logout') }}" method="POST" id="logout-form">
@@ -213,6 +252,70 @@
     <script src="{{ asset('assets/vendor/js/menu.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
+
+    <script>
+    // Icon fallback system for Admin layout
+    function checkAndFallbackIcons() {
+        const icons = document.querySelectorAll('[data-fallback-fa], [data-fallback-emoji]');
+        
+        icons.forEach(icon => {
+            // Check if the icon is actually displayed (has content or proper font)
+            const computedStyle = window.getComputedStyle(icon, '::before');
+            const content = computedStyle.getPropertyValue('content');
+            const fontFamily = computedStyle.getPropertyValue('font-family');
+            
+            // Check if Boxicons is not loading properly
+            const isBoxiconsEmpty = content === 'none' || content === '""' || !fontFamily.includes('boxicons');
+            
+            if (isBoxiconsEmpty && icon.classList.contains('bx')) {
+                console.log('Boxicons not loaded for:', icon);
+                
+                // Try Font Awesome fallback first
+                const fallbackFa = icon.getAttribute('data-fallback-fa');
+                if (fallbackFa) {
+                    icon.className = icon.className.replace(/bx[\w-]*/g, '') + ' ' + fallbackFa;
+                    
+                    // Check if Font Awesome loaded
+                    setTimeout(() => {
+                        const faComputedStyle = window.getComputedStyle(icon, '::before');
+                        const faContent = faComputedStyle.getPropertyValue('content');
+                        const faFontFamily = faComputedStyle.getPropertyValue('font-family');
+                        
+                        if (faContent === 'none' || faContent === '""' || !faFontFamily.includes('Font Awesome')) {
+                            // Font Awesome also failed, use emoji fallback
+                            const fallbackEmoji = icon.getAttribute('data-fallback-emoji');
+                            if (fallbackEmoji) {
+                                icon.innerHTML = fallbackEmoji;
+                                icon.className = icon.className.replace(/fa[\w-]*/g, '');
+                                icon.style.fontFamily = 'inherit';
+                                icon.style.fontSize = '1.2em';
+                            }
+                        }
+                    }, 100);
+                } else {
+                    // No Font Awesome fallback, go directly to emoji
+                    const fallbackEmoji = icon.getAttribute('data-fallback-emoji');
+                    if (fallbackEmoji) {
+                        icon.innerHTML = fallbackEmoji;
+                        icon.className = icon.className.replace(/bx[\w-]*/g, '');
+                        icon.style.fontFamily = 'inherit';
+                        icon.style.fontSize = '1.2em';
+                    }
+                }
+            }
+        });
+    }
+
+    // Run fallback check when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', checkAndFallbackIcons);
+    } else {
+        checkAndFallbackIcons();
+    }
+
+    // Also run fallback check after a short delay to catch late-loading fonts
+    setTimeout(checkAndFallbackIcons, 500);
+    </script>
 
     @stack('scripts')
 

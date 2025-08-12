@@ -7,7 +7,12 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-bold mb-0">Riwayat Absensi Saya</h4>
         <a href="{{ route('attendances.index') }}" class="btn btn-secondary">
-            <i class="bx bx-arrow-back me-1"></i> Kembali ke Absensi
+            <i class="bx bx-arrow-back me-1" 
+               data-fallback-fa="fas fa-arrow-left" 
+               data-fallback-emoji="⬅️"
+               style="font-size: 1rem !important; 
+                      line-height: 1 !important; 
+                      display: inline-block !important;"></i> Kembali ke Absensi
         </a>
     </div>
 

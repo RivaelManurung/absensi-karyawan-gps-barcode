@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\ShiftController;
 use App\Http\Controllers\Admin\StatusController;
 use App\Http\Controllers\Admin\BarcodeController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 use App\Http\Controllers\User\AttendanceController;
 
 // Route untuk tamu (belum login)
@@ -67,6 +68,17 @@ Route::middleware('auth')->group(function () {
         Route::resource('barcodes', BarcodeController::class);
         Route::get('/barcodes/{barcode}/show-qr', [BarcodeController::class, 'showQr'])->name('barcodes.show-qr');
         Route::get('/barcodes/{barcode}/download-qr', [BarcodeController::class, 'downloadQr'])->name('barcodes.download-qr');
+        
+        // Admin Profile Routes
+        Route::prefix('profile')->name('profile.')->group(function () {
+            Route::get('/', [AdminProfileController::class, 'index'])->name('index');
+            Route::put('/update', [AdminProfileController::class, 'update'])->name('update');
+            Route::put('/update-password', [AdminProfileController::class, 'updatePassword'])->name('update-password');
+            Route::post('/update-photo', [AdminProfileController::class, 'updatePhoto'])->name('update-photo');
+            Route::delete('/remove-photo', [AdminProfileController::class, 'removePhoto'])->name('remove-photo');
+        });
+        
+        // Reports
         
         // Routes untuk Leave Requests / Pengajuan Izin
         Route::prefix('leave-requests')->name('leave-requests.')->group(function () {

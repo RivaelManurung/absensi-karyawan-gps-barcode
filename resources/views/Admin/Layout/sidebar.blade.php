@@ -109,13 +109,23 @@
         </li>
         <li class="menu-item {{ Request::routeIs('attendances.history') ? 'active' : '' }}">
             <a href="{{ route('attendances.history') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-history"></i>
+                <i class="menu-icon tf-icons bx bx-history" 
+                   data-fallback-fa="fas fa-history" 
+                   data-fallback-emoji="📋"
+                   style="font-size: 1.125rem !important; 
+                          line-height: 1 !important; 
+                          display: inline-block !important;"></i>
                 <div class="text-truncate">Riwayat Absensi</div>
             </a>
         </li>
         <li class="menu-item {{ Request::routeIs('attendances.request.create') ? 'active' : '' }}">
             <a href="{{ route('attendances.request.create') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-envelope"></i>
+                <i class="menu-icon tf-icons bx bx-envelope" 
+                   data-fallback-fa="fas fa-envelope" 
+                   data-fallback-emoji="✉️"
+                   style="font-size: 1.125rem !important; 
+                          line-height: 1 !important; 
+                          display: inline-block !important;"></i>
                 <div class="text-truncate">Ajukan Izin</div>
             </a>
         </li>

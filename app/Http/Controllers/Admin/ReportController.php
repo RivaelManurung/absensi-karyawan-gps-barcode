@@ -263,7 +263,7 @@ class ReportController extends Controller
 
     public function export(Request $request)
     {
-        $format = $request->get('format', 'csv');
+        $format = $request->get('format', 'excel');
         $reportType = $request->get('report_type', 'overview');
         $divisionId = $request->get('division_id');
         $userId = $request->get('user_id');
@@ -357,72 +357,6 @@ class ReportController extends Controller
             $pdf->setPaper('A4', 'landscape');
             
             return $pdf->download($filename . '.pdf');
-        }
-        
-        // Handle CSV export (existing code)
-        if ($format == 'csv') {
-            $headers = [
-                'Content-Type' => 'text/csv',
-                'Content-Disposition' => "attachment; filename=\"{$filename}.csv\"",
-            ];
-            
-            $callback = function() use ($attendances, $reportType) {
-                $file = fopen('php://output', 'w');
-                
-                // Add BOM for proper UTF-8 encoding in Excel
-                fputs($file, "\xEF\xBB\xBF");
-                
-                // Add header based on report type
-                if ($reportType === 'leave-requests') {
-                    fputcsv($file, [
-                        'Tanggal',
-                        'Nama Karyawan',
-                        'Divisi',
-                        'Jabatan',
-                        'Status',
-                        'Keterangan'
-                    ]);
-                } else {
-                    fputcsv($file, [
-                        'Tanggal',
-                        'Nama Karyawan',
-                        'Divisi',
-                        'Jabatan',
-                        'Status',
-                        'Jam Masuk',
-                        'Jam Keluar',
-                        'Keterangan'
-                    ]);
-                }
-                
-                foreach ($attendances as $attendance) {
-                    if ($reportType === 'leave-requests') {
-                        fputcsv($file, [
-                            Carbon::parse($attendance->date)->format('d/m/Y'),
-                            $attendance->user->name ?? '',
-                            $attendance->user->division->name ?? '',
-                            $attendance->user->jobTitle->name ?? '',
-                            $attendance->status->name ?? '',
-                            $attendance->note ?? ''
-                        ]);
-                    } else {
-                        fputcsv($file, [
-                            Carbon::parse($attendance->date)->format('d/m/Y'),
-                            $attendance->user->name ?? '',
-                            $attendance->user->division->name ?? '',
-                            $attendance->user->jobTitle->name ?? '',
-                            $attendance->status->name ?? '',
-                            $attendance->time_in ? Carbon::parse($attendance->time_in)->format('H:i') : '',
-                            $attendance->time_out ? Carbon::parse($attendance->time_out)->format('H:i') : '',
-                            $attendance->note ?? ''
-                        ]);
-                    }
-                }
-                
-                fclose($file);
-            };
-            
-            return response()->stream($callback, 200, $headers);
         }
         
         return redirect()->back()->with('error', 'Format tidak valid');

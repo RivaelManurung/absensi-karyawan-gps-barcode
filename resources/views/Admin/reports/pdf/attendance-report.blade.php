@@ -123,19 +123,6 @@
             color: #666;
         }
         
-        .signature-box {
-            margin-top: 40px;
-            float: right;
-            text-align: center;
-            width: 200px;
-        }
-        
-        .signature-line {
-            border-top: 1px solid #333;
-            margin-top: 60px;
-            padding-top: 5px;
-        }
-        
         /* Page break */
         .page-break {
             page-break-after: always;
@@ -279,14 +266,6 @@
     <!-- Footer -->
     <div class="footer">
         <p>Laporan ini dicetak pada {{ \Carbon\Carbon::now()->format('d/m/Y H:i') }}</p>
-    </div>
-    
-    <!-- Signature -->
-    <div class="signature-box">
-        <p>Mengetahui,</p>
-        <div class="signature-line">
-            <p><strong>Admin</strong></p>
-        </div>
     </div>
 </body>
 </html>
