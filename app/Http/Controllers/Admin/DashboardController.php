@@ -8,6 +8,7 @@ use App\Models\Division;
 use App\Models\JobTitle;
 use App\Models\Shift;
 use App\Models\Attendance;
+use App\Models\Status;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
@@ -27,9 +28,12 @@ class DashboardController extends Controller
 
         // 2. Data untuk Donut Chart Absensi Hari Ini
         $attendanceCounts = Attendance::whereDate('date', Carbon::today())
-            ->groupBy('status')
-            ->select('status', DB::raw('count(*) as total'))
-            ->pluck('total', 'status');
+            ->with('status')
+            ->get()
+            ->groupBy('status.name')
+            ->map(function ($group) {
+                return $group->count();
+            });
 
         $attendanceChartData = [
             'labels' => ['Hadir', 'Terlambat', 'Izin', 'Sakit'],
@@ -42,8 +46,10 @@ class DashboardController extends Controller
         ];
 
         // 3. Data untuk Daftar Pengajuan Izin Terbaru
-        $recentLeaveRequests = Attendance::with('user.division') 
-            ->whereIn('status', ['excused', 'sick'])
+        $recentLeaveRequests = Attendance::with(['user.division', 'status']) 
+            ->whereHas('status', function($q) {
+                $q->whereIn('name', ['pending', 'excused', 'sick']);
+            })
             ->latest()
             ->take(5)
             ->get();

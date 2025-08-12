@@ -6,7 +6,7 @@ use App\Models\User;
 use App\Models\Division;
 use App\Models\JobTitle;
 use App\Models\Education;
-use App\Models\Shift; // <-- 1. Tambahkan model Shift
+use App\Models\Shift;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -15,20 +15,45 @@ use App\Http\Controllers\Controller;
 
 class UserController extends Controller
 {
+    /**
+     * Menampilkan halaman MANAJEMEN KARYAWAN (tabel biasa dengan CRUD).
+     */
     public function index()
     {
         // Ambil semua data master yang dibutuhkan untuk modal
         $divisions = Division::orderBy('name')->get();
         $jobTitles = JobTitle::orderBy('name')->get();
         $educations = Education::all();
-        $shifts = Shift::orderBy('name')->get(); // <-- 2. Ambil data Shift
+        $shifts = Shift::orderBy('name')->get();
 
-        $users = User::with(['division', 'jobTitle', 'shift'])->latest()->paginate(10);
+        // Ambil semua user dengan paginasi untuk ditampilkan di tabel utama
+        $users = User::with(['division', 'jobTitle', 'shift'])->latest()->paginate(15);
         
-        // Kirim semua data ke view
         return view('admin.users.index', compact('users', 'divisions', 'jobTitles', 'educations', 'shifts'));
     }
 
+    /**
+     * Menampilkan halaman KARYAWAN PER DIVISI (hanya untuk melihat).
+     */
+    public function perDivision()
+    {
+        // Ambil data divisi, beserta user di dalamnya
+        $divisionsWithUsers = Division::with(['users.jobTitle', 'users.shift'])
+            ->orderBy('name')
+            ->get();
+            
+        // Ambil user yang belum punya divisi
+        $usersWithoutDivision = User::whereNull('division_id')
+            ->with(['jobTitle', 'shift'])
+            ->latest()
+            ->get();
+        
+        return view('admin.users.per-division', compact('divisionsWithUsers', 'usersWithoutDivision'));
+    }
+
+    /**
+     * Menyimpan pengguna baru dari modal.
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -38,7 +63,7 @@ class UserController extends Controller
             'group' => 'required|in:user,admin,superadmin',
             'division_id' => 'required|exists:divisions,id',
             'job_title_id' => 'required|exists:job_titles,id',
-            'shift_id' => 'required|exists:shifts,id', // <-- 3. Tambahkan validasi untuk shift
+            'shift_id' => 'required|exists:shifts,id',
         ], [], [], 'store');
 
         $data = $request->except('password');
@@ -49,6 +74,9 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'Pengguna berhasil ditambahkan.');
     }
 
+    /**
+     * Memperbarui data pengguna dari modal.
+     */
     public function update(Request $request, User $user)
     {
         $validator = Validator::make($request->all(), [
@@ -57,7 +85,7 @@ class UserController extends Controller
             'group' => 'required|in:user,admin,superadmin',
             'division_id' => 'required|exists:divisions,id',
             'job_title_id' => 'required|exists:job_titles,id',
-            'shift_id' => 'required|exists:shifts,id', // <-- 4. Tambahkan validasi untuk shift
+            'shift_id' => 'required|exists:shifts,id',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
@@ -79,6 +107,9 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'Data pengguna berhasil diperbarui.');
     }
 
+    /**
+     * Menghapus pengguna.
+     */
     public function destroy(User $user)
     {
         if ($user->group === 'superadmin' || $user->id === auth()->id()) {

@@ -14,6 +14,58 @@
     <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('assets/js/config.js') }}"></script>
+    
+    <style>
+        /* Custom Pagination Styles */
+        .pagination {
+            border-radius: 0.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+        
+        .page-link {
+            color: #6c757d;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            padding: 0.5rem 0.75rem;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .page-link:hover {
+            color: #0d6efd;
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+            transform: translateY(-1px);
+        }
+        
+        .page-item.active .page-link {
+            color: #fff;
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+            box-shadow: 0 0.125rem 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        
+        .page-item.disabled .page-link {
+            color: #6c757d;
+            background-color: #fff;
+            border-color: #dee2e6;
+            opacity: 0.5;
+        }
+        
+        .pagination-sm .page-link {
+            padding: 0.375rem 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        /* Responsive pagination */
+        @media (max-width: 576px) {
+            .pagination {
+                font-size: 0.8rem;
+            }
+            .pagination-sm .page-link {
+                padding: 0.25rem 0.375rem;
+            }
+        }
+    </style>
 </head>
 
 <body>

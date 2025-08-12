@@ -121,8 +121,8 @@
                                 <div class="me-2">
                                     <h6 class="mb-0">{{ $request->user->name }}</h6>
                                     <small class="text-muted d-block">
-                                        Divisi: {{ $request->user->division->name ?? 'N/A' }} | {{
-                                        Str::ucfirst($request->status) }}
+                                        Divisi: {{ $request->user->division->name ?? 'N/A' }} | 
+                                        {{ $request->status->label ?? 'Unknown' }}
                                     </small>
                                 </div>
                                 <div class="user-progress">

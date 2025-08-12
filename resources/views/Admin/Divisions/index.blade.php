@@ -63,8 +63,10 @@
             </table>
         </div>
         @if ($divisions->hasPages())
-        <div class="card-footer d-flex justify-content-end">
-            {{ $divisions->links() }}
+        <div class="card-footer bg-transparent border-top">
+            <div class="d-flex justify-content-center">
+                {{ $divisions->links() }}
+            </div>
         </div>
         @endif
     </div>

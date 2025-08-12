@@ -1,16 +1,15 @@
 @extends('admin.layout.main')
-@section('title', 'Manajemen Pengguna')
+@section('title', 'Manajemen Karyawan')
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-    {{-- Notifikasi --}}
     @if(session('success'))<div class="alert alert-success alert-dismissible fade show" role="alert"><strong>Berhasil!</strong> {{ session('success') }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>@endif
     @if(session('error'))<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>Gagal!</strong> {{ session('error') }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>@endif
     
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Manajemen Pengguna</h5>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUserModal"><i class="bx bx-plus me-1"></i> Tambah Pengguna</button>
+            <h5 class="mb-0">Manajemen Karyawan</h5>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUserModal"><i class="bx bx-plus me-1"></i> Tambah Karyawan</button>
         </div>
         <div class="table-responsive text-nowrap">
             <table class="table table-hover">
@@ -20,7 +19,7 @@
                         <th>Email</th>
                         <th>Divisi</th>
                         <th>Jabatan</th>
-                        <th>Shift</th> {{-- <-- KOLOM BARU --}}
+                        <th>Shift</th>
                         <th>Grup</th>
                         <th>Aksi</th>
                     </tr>
@@ -32,7 +31,7 @@
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->division?->name ?? '-' }}</td>
                         <td>{{ $user->jobTitle?->name ?? '-' }}</td>
-                        <td>{{ $user->shift?->name ?? '-' }}</td> {{-- <-- DATA BARU --}}
+                        <td>{{ $user->shift?->name ?? '-' }}</td>
                         <td><span class="badge bg-label-primary me-1">{{ ucfirst($user->group) }}</span></td>
                         <td>
                             <div class="dropdown">
@@ -46,7 +45,7 @@
                                         data-group="{{ $user->group }}"
                                         data-division_id="{{ $user->division_id }}"
                                         data-job_title_id="{{ $user->job_title_id }}"
-                                        data-shift_id="{{ $user->shift_id }}"> {{-- <-- ATRIBUT DATA BARU --}}
+                                        data-shift_id="{{ $user->shift_id }}">
                                         <i class="bx bx-edit-alt me-1"></i> Ubah
                                     </button>
                                     <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Anda yakin ingin menghapus pengguna ini?');">
@@ -67,8 +66,10 @@
             </table>
         </div>
         @if($users->hasPages())
-        <div class="card-footer d-flex justify-content-end">
-            {{ $users->links() }}
+        <div class="card-footer bg-transparent border-top">
+            <div class="d-flex justify-content-center">
+                {{ $users->links() }}
+            </div>
         </div>
         @endif
     </div>
@@ -84,7 +85,6 @@
         const editModalEl = document.getElementById('editUserModal');
         const editForm = document.getElementById('editUserForm');
         
-        // Mengisi modal edit saat tombol "Ubah" diklik
         document.querySelectorAll('.edit-btn').forEach(button => {
             button.addEventListener('click', function () {
                 const data = this.dataset;
@@ -96,14 +96,13 @@
                 editModalEl.querySelector('#edit_email').value = data.email;
                 editModalEl.querySelector('#edit_division_id').value = data.division_id;
                 editModalEl.querySelector('#edit_job_title_id').value = data.job_title_id;
-                editModalEl.querySelector('#edit_shift_id').value = data.shift_id; // <-- JS BARU
+                editModalEl.querySelector('#edit_shift_id').value = data.shift_id;
                 editModalEl.querySelector('#edit_group').value = data.group;
                 editModalEl.querySelector('#edit_password').value = '';
                 editModalEl.querySelector('#edit_password_confirmation').value = '';
             });
         });
 
-        // Membuka kembali modal yang relevan jika ada error validasi
         @if($errors->any())
             var errorModalId = '';
             @if ($errors->hasBag('store'))

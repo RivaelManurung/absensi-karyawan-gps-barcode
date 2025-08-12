@@ -1,14 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DivisionController;
 use App\Http\Controllers\Admin\JobTitleController;
 use App\Http\Controllers\Admin\ShiftController;
+use App\Http\Controllers\Admin\StatusController;
 use App\Http\Controllers\Admin\BarcodeController;
-
 use App\Http\Controllers\User\AttendanceController;
 
 // Route untuk tamu (belum login)
@@ -36,12 +37,28 @@ Route::middleware('auth')->group(function () {
     Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        Route::resource('users', UserController::class);
+        // ✅ PERBAIKAN UTAMA ADA DI SINI
+        // Kita batasi resource controller agar hanya membuat route yang kita butuhkan
+        Route::resource('users', UserController::class)->only([
+            'index', 'store', 'update', 'destroy'
+        ]);
+        
+        Route::get('/users/per-division', [UserController::class, 'perDivision'])->name('users.per-division');
+
         Route::resource('divisions', DivisionController::class);
         Route::resource('job-titles', JobTitleController::class);
         Route::resource('shifts', ShiftController::class);
+        Route::resource('statuses', StatusController::class); // Tambah route status
         Route::resource('barcodes', BarcodeController::class);
         Route::get('/barcodes/{barcode}/show-qr', [BarcodeController::class, 'showQr'])->name('barcodes.show-qr');
         Route::get('/barcodes/{barcode}/download-qr', [BarcodeController::class, 'downloadQr'])->name('barcodes.download-qr');
+        
+        // Routes untuk Leave Requests / Pengajuan Izin
+        Route::prefix('leave-requests')->name('leave-requests.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\LeaveRequestController::class, 'index'])->name('index');
+            Route::get('/{id}', [App\Http\Controllers\Admin\LeaveRequestController::class, 'show'])->name('show');
+            Route::patch('/{id}/approve', [App\Http\Controllers\Admin\LeaveRequestController::class, 'approve'])->name('approve');
+            Route::patch('/{id}/reject', [App\Http\Controllers\Admin\LeaveRequestController::class, 'reject'])->name('reject');
+        });
     });
 });

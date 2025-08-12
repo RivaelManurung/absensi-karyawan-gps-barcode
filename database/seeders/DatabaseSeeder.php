@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             JobTitleSeeder::class,
             ShiftSeeder::class,
             BarcodeSeeder::class,
+            StatusSeeder::class, // Tambah StatusSeeder
         ]);
 
         // Panggil UserSeeder SETELAH data master terisi

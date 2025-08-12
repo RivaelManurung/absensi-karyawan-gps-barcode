@@ -135,7 +135,84 @@
                                     </form>
                                 </div>
 
-                            @elseif (!$todayAttendance->time_out)
+                            @elseif ($todayAttendance->status && $todayAttendance->status->name === 'pending')
+                                {{-- Pending Leave Request --}}
+                                <div class="text-center">
+                                    <div class="bg-warning-subtle rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                                         style="width: 80px; height: 80px;">
+                                        <i class="bx bx-hourglass text-warning" style="font-size: 2.5rem;"></i>
+                                    </div>
+                                    <h5 class="fw-bold text-warning mb-2">Pengajuan Menunggu Persetujuan</h5>
+                                    @if($todayAttendance->request_type)
+                                        <p class="text-muted">Pengajuan <strong>{{ ucfirst($todayAttendance->request_type) }}</strong> Anda sedang menunggu persetujuan dari admin.</p>
+                                    @else
+                                        <p class="text-muted">Pengajuan izin Anda sedang menunggu persetujuan dari admin.</p>
+                                    @endif
+                                    
+                                    @if($todayAttendance->note)
+                                        <div class="mt-3 p-3 bg-light rounded-3">
+                                            <div class="text-muted small">Keterangan:</div>
+                                            <div class="fw-semibold">{{ $todayAttendance->note }}</div>
+                                        </div>
+                                    @endif
+                                </div>
+
+                            @elseif ($todayAttendance->status && in_array($todayAttendance->status->name, ['approved', 'sick', 'excused', 'leave']))
+                                {{-- Approved Leave --}}
+                                <div class="text-center">
+                                    @php
+                                        $statusIcons = [
+                                            'sick' => 'bx-plus-medical',
+                                            'excused' => 'bx-info-circle', 
+                                            'leave' => 'bx-calendar-minus',
+                                            'approved' => 'bx-check-circle'
+                                        ];
+                                        $icon = $statusIcons[$todayAttendance->status->name] ?? 'bx-info-circle';
+                                        $statusName = $todayAttendance->request_type ?? $todayAttendance->status->name;
+                                    @endphp
+                                    <div class="bg-info-subtle rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                                         style="width: 80px; height: 80px;">
+                                        <i class="bx {{ $icon }} text-info" style="font-size: 2.5rem;"></i>
+                                    </div>
+                                    <h5 class="fw-bold text-info mb-2">{{ ucfirst($statusName) }} Disetujui</h5>
+                                    <p class="text-muted">Pengajuan {{ strtolower($statusName) }} Anda telah disetujui oleh admin.</p>
+                                    
+                                    @if($todayAttendance->note)
+                                        <div class="mt-3 p-3 bg-light rounded-3">
+                                            <div class="text-muted small">Keterangan:</div>
+                                            <div class="fw-semibold">{{ $todayAttendance->note }}</div>
+                                        </div>
+                                    @endif
+                                    
+                                    @if($todayAttendance->approved_at)
+                                        <div class="mt-2">
+                                            <small class="text-success">
+                                                <i class="bx bx-check-circle me-1"></i>
+                                                Disetujui pada {{ \Carbon\Carbon::parse($todayAttendance->approved_at)->format('d/m/Y H:i') }}
+                                            </small>
+                                        </div>
+                                    @endif
+                                </div>
+
+                            @elseif ($todayAttendance->status && $todayAttendance->status->name === 'rejected')
+                                {{-- Rejected Leave --}}
+                                <div class="text-center">
+                                    <div class="bg-danger-subtle rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                                         style="width: 80px; height: 80px;">
+                                        <i class="bx bx-x-circle text-danger" style="font-size: 2.5rem;"></i>
+                                    </div>
+                                    <h5 class="fw-bold text-danger mb-2">Pengajuan Ditolak</h5>
+                                    <p class="text-muted">Pengajuan izin Anda ditolak oleh admin.</p>
+                                    
+                                    @if($todayAttendance->rejection_reason)
+                                        <div class="mt-3 p-3 bg-danger-subtle rounded-3">
+                                            <div class="text-danger small fw-semibold">Alasan Penolakan:</div>
+                                            <div class="text-danger">{{ $todayAttendance->rejection_reason }}</div>
+                                        </div>
+                                    @endif
+                                </div>
+
+                            @elseif ($todayAttendance->time_in && !$todayAttendance->time_out)
                                 {{-- Clock Out Form --}}
                                 <div class="mb-4">
                                     <div class="alert alert-success border-0 rounded-3 p-4 mb-4">
@@ -230,19 +307,49 @@
                                         <small class="text-muted">{{ \Carbon\Carbon::parse($attendance->date)->translatedFormat('l') }}</small>
                                     </td>
                                     <td class="py-3">
-                                        @php 
-                                            $statusConfig = [
-                                                'present' => ['class' => 'success', 'icon' => 'bx-check-circle', 'text' => 'Hadir'],
-                                                'late' => ['class' => 'warning', 'icon' => 'bx-time', 'text' => 'Terlambat'],
-                                                'excused' => ['class' => 'info', 'icon' => 'bx-info-circle', 'text' => 'Izin'],
-                                                'sick' => ['class' => 'danger', 'icon' => 'bx-plus-medical', 'text' => 'Sakit']
-                                            ];
-                                            $status = $statusConfig[$attendance->status] ?? ['class' => 'dark', 'icon' => 'bx-question-mark', 'text' => 'Unknown'];
-                                        @endphp
-                                        <span class="badge bg-{{ $status['class'] }}-subtle text-{{ $status['class'] }} px-3 py-2 rounded-pill">
-                                            <i class="bx {{ $status['icon'] }} me-1"></i>
-                                            {{ $status['text'] }}
-                                        </span>
+                                        @if($attendance->status)
+                                            @php
+                                                $statusColors = [
+                                                    'present' => 'success',
+                                                    'late' => 'warning', 
+                                                    'absent' => 'danger',
+                                                    'sick' => 'info',
+                                                    'excused' => 'secondary',
+                                                    'pending' => 'warning',
+                                                    'approved' => 'success',
+                                                    'rejected' => 'danger'
+                                                ];
+                                                $statusColor = $statusColors[$attendance->status->name] ?? 'secondary';
+                                            @endphp
+                                            
+                                            <div class="d-flex flex-column">
+                                                <span class="badge bg-{{ $statusColor }} px-3 py-2 rounded-pill mb-1">
+                                                    {{ ucfirst($attendance->status->name) }}
+                                                </span>
+                                                
+                                                @if($attendance->request_type && $attendance->status->name === 'pending')
+                                                    <small class="text-muted">
+                                                        Pengajuan: <strong>{{ ucfirst($attendance->request_type) }}</strong>
+                                                    </small>
+                                                @elseif($attendance->request_type && in_array($attendance->status->name, ['approved', 'rejected']))
+                                                    <small class="text-muted">
+                                                        {{ ucfirst($attendance->request_type) }} - {{ $attendance->status->name === 'approved' ? 'Disetujui' : 'Ditolak' }}
+                                                    </small>
+                                                @endif
+                                                
+                                                @if($attendance->note)
+                                                    <small class="text-muted mt-1">
+                                                        <i class="bx bx-note me-1"></i>
+                                                        {{ Str::limit($attendance->note, 50) }}
+                                                    </small>
+                                                @endif
+                                            </div>
+                                        @else
+                                            <span class="badge bg-secondary px-3 py-2 rounded-pill">
+                                                <i class="bx bx-question-mark me-1"></i>
+                                                Unknown
+                                            </span>
+                                        @endif
                                     </td>
                                     <td class="py-3">
                                         <div class="fw-semibold">{{ $attendance->time_in ? \Carbon\Carbon::parse($attendance->time_in)->format('H:i') : '-' }}</div>
@@ -270,7 +377,7 @@
                 </div>
                 
                 @if ($history->hasPages())
-                <div class="card-footer bg-transparent border-top-0 p-4">
+                <div class="card-footer bg-transparent border-top p-4">
                     <div class="d-flex justify-content-center">
                         {{ $history->links() }}
                     </div>
@@ -312,21 +419,23 @@
                                 @csrf
                                 
                                 <div class="mb-4">
-                                    <label for="status" class="form-label fw-semibold">
+                                    <label for="status_id" class="form-label fw-semibold">
                                         <i class="bx bx-category me-1"></i>
                                         Jenis Pengajuan <span class="text-danger">*</span>
                                     </label>
-                                    <select class="form-select form-select-lg rounded-3 @error('status') is-invalid @enderror" 
-                                            name="status" required>
+                                    <select class="form-select form-select-lg rounded-3 @error('status_id') is-invalid @enderror" 
+                                            name="status_id" required>
                                         <option value="">-- Pilih Jenis Pengajuan --</option>
-                                        <option value="excused" @if(old('status')=='excused') selected @endif>
-                                            <i class="bx bx-info-circle"></i> Izin
-                                        </option>
-                                        <option value="sick" @if(old('status')=='sick') selected @endif>
-                                            <i class="bx bx-plus-medical"></i> Sakit
-                                        </option>
+                                        @foreach($availableStatuses as $status)
+                                            <option value="{{ $status->id }}" @if(old('status_id') == $status->id) selected @endif>
+                                                {{ ucfirst($status->name) }}
+                                                @if($status->description)
+                                                    - {{ $status->description }}
+                                                @endif
+                                            </option>
+                                        @endforeach
                                     </select>
-                                    @error('status')
+                                    @error('status_id')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>

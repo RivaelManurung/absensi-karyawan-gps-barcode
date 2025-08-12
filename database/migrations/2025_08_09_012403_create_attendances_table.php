@@ -21,15 +21,18 @@ return new class extends Migration
             $table->foreignId('shift_id')->nullable()->constrained('shifts');
             $table->double('latitude')->nullable(); // lokasi absensi sumbu Y
             $table->double('longitude')->nullable(); // lokasi absensi sumbu X
-            $table->enum('status', [
-                'present', // hadir
-                'late', // terlambat
-                'excused', // izin
-                'sick', // sakit
-                'absent' // tidak hadir
-            ])->default('absent');
+            $table->foreignId('status_id')->nullable()->constrained('statuses'); // referensi ke tabel status
+            $table->string('request_type')->nullable(); // jenis pengajuan yang diminta user (sick, excused, leave, etc)
             $table->string('note')->nullable(); // keterangan
             $table->string('attachment')->nullable(); // lampiran
+            
+            // Kolom untuk approval
+            $table->timestamp('approved_at')->nullable(); // waktu disetujui
+            $table->foreignUlid('approved_by')->nullable()->constrained('users'); // disetujui oleh admin
+            $table->timestamp('rejected_at')->nullable(); // waktu ditolak
+            $table->foreignUlid('rejected_by')->nullable()->constrained('users'); // ditolak oleh admin
+            $table->string('rejection_reason')->nullable(); // alasan penolakan
+            
             $table->timestamps();
         });
     }

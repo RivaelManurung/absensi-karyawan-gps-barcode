@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Attendance;
 use App\Models\Barcode;
+use App\Models\Status;
 use Carbon\Carbon;
 use App\Http\Controllers\Traits\CalculatesDistance;
 use App\Http\Controllers\Controller;
@@ -23,16 +24,21 @@ class AttendanceController extends Controller
 
         $todayAttendance = Attendance::where('user_id', $user->id)
             ->whereDate('date', Carbon::today())
+            ->with('status')
             ->first();
 
         $history = Attendance::where('user_id', $user->id)
-            ->with('shift')
+            ->with(['shift', 'status'])
             ->orderBy('date', 'desc')
             ->paginate(10); // Menampilkan 10 riwayat per halaman
 
+        // Ambil semua status yang bisa dipilih untuk pengajuan
+        $availableStatuses = Status::whereIn('name', ['sick', 'excused', 'leave', 'permit', 'official'])->get();
+
         return view('user.attendances.index', [ // Pastikan path view ini benar
             'todayAttendance' => $todayAttendance,
-            'history'         => $history
+            'history'         => $history,
+            'availableStatuses' => $availableStatuses
         ]);
     }
 
@@ -79,6 +85,9 @@ class AttendanceController extends Controller
         }
 
         $status = (Carbon::now()->format('H:i:s') > $shift->start_time) ? 'late' : 'present';
+        
+        // Dapatkan status_id berdasarkan nama status
+        $statusRecord = Status::where('name', $status)->first();
 
         Attendance::create([
             'user_id' => $user->id,
@@ -86,7 +95,7 @@ class AttendanceController extends Controller
             'shift_id' => $shift->id,
             'date' => Carbon::today(),
             'time_in' => Carbon::now(),
-            'status' => $status,
+            'status_id' => $statusRecord->id,
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
         ]);
@@ -146,9 +155,9 @@ class AttendanceController extends Controller
     public function storeRequest(Request $request)
     {
         $request->validate([
-            'status' => 'required|in:excused,sick',
-            'note' => 'required|string|max:255',
-            'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'status_id' => 'required|exists:statuses,id',
+            'note' => 'required|string|max:500',
+            'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
         ]);
 
         $user = Auth::user();
@@ -162,15 +171,28 @@ class AttendanceController extends Controller
             $attachmentPath = $request->file('attachment')->store('attachments', 'public');
         }
 
+        // Dapatkan status pending untuk pengajuan baru
+        $pendingStatus = Status::where('name', 'pending')->first();
+        
+        // Jika tidak ada status pending, buat error
+        if (!$pendingStatus) {
+            return back()->with('error', 'Status pending tidak ditemukan. Hubungi administrator.');
+        }
+
+        // Simpan status yang diminta sebagai request_type 
+        $requestedStatus = Status::find($request->status_id);
+
         Attendance::create([
             'user_id' => $user->id,
             'date' => Carbon::today(),
-            'status' => $request->status,
+            'status_id' => $pendingStatus->id, // Status awal pending
+            'request_type' => $requestedStatus->name, // Simpan jenis pengajuan yang diminta
             'note' => $request->note,
             'attachment' => $attachmentPath,
         ]);
+        
         return redirect()->route('attendances.index')
-            ->with('success', 'Pengajuan izin Anda telah berhasil dikirim.')
+            ->with('success', 'Pengajuan izin ' . $requestedStatus->name . ' Anda telah berhasil dikirim dan menunggu persetujuan admin.')
             ->with('active_tab', 'request');
     }
 }
